@@ -1,0 +1,3879 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Royal Salon | سیستم مدیریت آرایشگاه</title>
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    /* --- Main Luxury Palette (Burgundy & Gold) --- */
+    --gold-primary: #D4AF37;
+    --gold-light: #FEDC56;
+    --gold-dark: #AA8C2C;
+    --gold-gradient: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+    
+    --burgundy-deep: #2D0008;
+    --burgundy-main: #4A0410;
+    --burgundy-light: #680818;
+    --burgundy-glass: rgba(74, 4, 16, 0.75);
+    
+    --bg-body: #1a0003;
+    --bg-card: rgba(40, 0, 8, 0.6);
+    --bg-input: rgba(0, 0, 0, 0.4);
+    
+    --text-main: #FFFFFF;
+    --text-muted: #D4AF37;
+    --text-gold: #F4E298;
+    
+    --border-gold: 1px solid rgba(212, 175, 55, 0.4);
+    --border-glow: 0 0 10px rgba(212, 175, 55, 0.3);
+    
+    --shadow-luxury: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    --glass-blur: blur(12px);
+    
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    
+    --success: #00C853;
+    --danger: #FF1744;
+    --warning: #FFAB00;
+    --info: #00B0FF;
+
+    /* --- Animations --- */
+    --anim-fast: 0.2s ease;
+    --anim-med: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+:root {
+    /* =========================================
+       1. تم پیش‌فرض: تاریک و لوکس (Dark Royal)
+       ========================================= */
+    --gold-primary: #D4AF37;
+    --gold-light: #FEDC56;
+    --gold-dark: #AA8C2C;
+    --gold-gradient: linear-gradient(135deg, #BF953F, #FCF6BA, #B38728, #FBF5B7, #AA771C);
+    
+    --burgundy-deep: #2D0008;
+    --burgundy-main: #4A0410;
+    --burgundy-light: #680818;
+    
+    --bg-body: #1a0003;
+    --bg-card: rgba(40, 0, 8, 0.6);
+    --bg-input: rgba(0, 0, 0, 0.4);
+    
+    --text-main: #FFFFFF;
+    --text-muted: #D4AF37;
+    --text-gold: #F4E298;
+    
+    --border-gold: 1px solid rgba(212, 175, 55, 0.4);
+    --shadow-luxury: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    --glass-blur: blur(12px);
+    
+    --success: #00C853;
+    --danger: #FF1744;
+    --warning: #FFAB00;
+    --info: #00B0FF;
+
+    /* انیمیشن */
+    --anim-fast: 0.2s ease;
+}
+
+/* =========================================
+   2. تم روشن: استاندارد و نرم (Soft Light)
+   ========================================= */
+[data-theme="light"] {
+    /* رنگ‌های زمینه - روشن اما نرم */
+    --bg-body: #F3F4F6;       /* طوسی خیلی روشن و مات */
+    --bg-card: #FFFFFF;       /* سفید ساده */
+    --bg-input: #FFFFFF;      /* سفید */
+    
+    /* متون - کنتراست استاندارد */
+    --text-main: #1F2937;     /* خاکستری تیره (مشکی نیست) */
+    --text-muted: #6B7280;    /* طوسی */
+    --text-gold: #B45309;     /* آجری/طلایی تیره */
+    
+    /* رنگ‌های اصلی */
+    --gold-primary: #D97706;
+    --gold-light: #F59E0B;
+    --gold-dark: #B45309;
+    --gold-gradient: linear-gradient(135deg, #F59E0B, #D97706);
+    
+    /* حاشیه و افکت */
+    --border-gold: 1px solid #E5E7EB; /* خطوط طوسی */
+    --shadow-luxury: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* سایه نرم */
+    --glass-blur: none; /* حذف افکت شیشه‌ای در تم روشن */
+    
+    /* رنگ‌های وضعیت */
+    --success: #059669;
+    --danger: #DC2626;
+    --warning: #D97706;
+}
+
+/* =========================================
+   استایل‌های کلی (مشترک برای هر دو تم)
+   ========================================= */
+* {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Vazirmatn', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gold-dark) var(--bg-body);
+}
+
+body {
+    background-color: var(--bg-body);
+    /* پترن پس‌زمینه فقط برای تم تاریک اعمال می‌شود */
+    background-image: radial-gradient(circle at 10% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 20%);
+    color: var(--text-main);
+    height: 100vh; overflow: hidden; display: flex; font-size: 14px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+[data-theme="light"] body {
+    background-image: none; /* حذف پترن در تم روشن */
+}
+
+/* --- پنل‌ها و کارت‌ها --- */
+.glass-panel, .sidebar, .top-header, .card, .stat-card {
+    background: var(--bg-card);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: var(--border-gold);
+    box-shadow: var(--shadow-luxury);
+    transition: all 0.3s ease;
+}
+
+.card {
+    border-radius: 20px; padding: 25px; margin-bottom: 25px; position: relative;
+}
+
+/* --- دکمه‌های طلایی --- */
+.gold-btn {
+    background: var(--gold-gradient);
+    color: #2D0008; /* در تم تاریک */
+    border: none; font-weight: 800;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer; border-radius: 12px; padding: 10px 20px;
+}
+[data-theme="light"] .gold-btn {
+    color: #FFF; /* در تم روشن متن دکمه سفید شود */
+    box-shadow: 0 4px 6px rgba(217, 119, 6, 0.3);
+}
+.gold-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+}
+
+/* --- ورودی‌ها (Inputs) --- */
+.lux-input, .lux-select, .lux-textarea {
+    width: 100%; padding: 12px 15px;
+    background: var(--bg-input);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px; color: var(--text-main);
+    outline: none; transition: 0.3s;
+}
+[data-theme="light"] .lux-input, 
+[data-theme="light"] .lux-select {
+    border-color: #D1D5DB; /* حاشیه طوسی در تم روشن */
+}
+.lux-input:focus {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+/* --- جداول --- */
+.table-container {
+    width: 100%; overflow-x: auto;
+    border-radius: 16px; border: 1px solid var(--border-gold);
+    background: rgba(0, 0, 0, 0.2);
+}
+[data-theme="light"] .table-container { background: #fff; }
+
+.lux-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+.lux-table th {
+    background: rgba(45,0,8,0.8); color: var(--gold-primary);
+    padding: 15px; text-align: right; font-weight: bold;
+    border-bottom: 2px solid var(--gold-dark);
+}
+[data-theme="light"] .lux-table th {
+    background: #F9FAFB; color: #374151; border-bottom: 2px solid #E5E7EB;
+}
+.lux-table td {
+    padding: 15px; border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    color: var(--text-main);
+}
+[data-theme="light"] .lux-table td { border-bottom: 1px solid #F3F4F6; }
+
+/* --- صفحه لاگین --- */
+#loginPage {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    background-color: #2D0008;
+    background-image: repeating-linear-gradient(45deg, transparent 0, transparent 60px, rgba(212, 175, 55, 0.1) 60px, rgba(212, 175, 55, 0.1) 61px);
+}
+.login-card {
+    width: 90%; max-width: 420px;
+    background: rgba(45, 0, 8, 0.9);
+    border: 2px solid var(--gold-primary);
+    border-radius: 30px; padding: 40px; text-align: center;
+    box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
+}
+.brand-logo {
+    width: 80px; height: 80px; margin: 0 auto 20px;
+    background: var(--gold-gradient); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 35px; color: #2D0008; box-shadow: 0 0 20px var(--gold-dark);
+}
+.login-input {
+    width: 100%; padding: 15px; margin-bottom: 15px;
+    background: rgba(0, 0, 0, 0.3); border: 1px solid var(--gold-dark);
+    border-radius: 50px; color: var(--gold-light); text-align: center; font-size: 16px;
+}
+
+/* --- ساختار صفحه اصلی --- */
+#mainApp { display: none; width: 100%; height: 100%; }
+
+.sidebar {
+    width: 280px; height: 100%; display: flex; flex-direction: column; padding: 20px; z-index: 100;
+}
+.nav-item {
+    padding: 12px 15px; margin-bottom: 8px; border-radius: 12px;
+    color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 12px;
+    transition: 0.3s;
+}
+.nav-item:hover, .nav-item.active {
+    background: var(--gold-gradient); color: #2D0008; font-weight: bold;
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+}
+[data-theme="light"] .nav-item:hover, [data-theme="light"] .nav-item.active {
+    color: #FFF; box-shadow: none;
+}
+
+.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.top-header {
+    height: 70px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 30px; z-index: 90;
+}
+.page-container { flex: 1; overflow-y: auto; padding: 30px; }
+.page { display: none; animation: fadeIn 0.4s; }
+.page.active { display: block; }
+
+/* --- المان‌های کوچک --- */
+.stat-card {
+    padding: 20px; border-radius: 20px; display: flex; align-items: center; gap: 15px;
+    transition: transform 0.3s;
+}
+.stat-card:hover { transform: translateY(-5px); border-color: var(--gold-primary); }
+.stat-icon-box {
+    width: 50px; height: 50px; border-radius: 12px;
+    background: rgba(212,175,55,0.1); border: 1px solid var(--gold-dark);
+    display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--gold-light);
+}
+[data-theme="light"] .stat-icon-box { background: #F3F4F6; border-color: #E5E7EB; color: var(--gold-dark); }
+[data-theme="light"] .stat-value { color: var(--text-main) !important; text-shadow: none; }
+
+.status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+.status-success { background: rgba(0, 200, 83, 0.2); color: #00E676; border: 1px solid #00E676; }
+.status-danger { background: rgba(255, 23, 68, 0.2); color: #FF5252; border: 1px solid #FF5252; }
+.status-neutral { background: rgba(255, 255, 255, 0.1); color: #ccc; border: 1px solid #ccc; }
+[data-theme="light"] .status-neutral { background: #EEE; color: #555; border: 1px solid #ddd; }
+
+/* --- آیکون دکمه‌ها --- */
+.icon-btn {
+    width: 40px; height: 40px; border-radius: 12px;
+    border: 1px solid var(--gold-dark); background: rgba(0,0,0,0.3);
+    color: var(--gold-light); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: 0.3s; font-size: 18px;
+}
+[data-theme="light"] .icon-btn {
+    background: #FFF; border-color: #E5E7EB; color: #6B7280;
+}
+.icon-btn:hover {
+    background: var(--gold-primary); color: #000;
+}
+[data-theme="light"] .icon-btn:hover { color: #FFF; }
+
+/* --- مودال --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 2000; display: none;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(5px);
+}
+.modal-overlay.open { display: flex; }
+.lux-modal {
+    background: #2D0008; border: 2px solid var(--gold-primary);
+    width: 90%; max-width: 500px; border-radius: 20px; overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8);
+}
+[data-theme="light"] .lux-modal {
+    background: #FFFFFF; border: 1px solid #E5E7EB; box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+.modal-header {
+    padding: 15px 20px; background: rgba(212,175,55,0.1);
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--gold-dark);
+}
+[data-theme="light"] .modal-header { background: #F9FAFB; border-bottom: 1px solid #E5E7EB; }
+[data-theme="light"] .modal-title { color: #111827; }
+
+.modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
+.modal-footer { padding: 15px 20px; border-top: 1px solid var(--gold-dark); text-align: left; }
+[data-theme="light"] .modal-footer { border-top: 1px solid #E5E7EB; }
+.close-modal { background: none; border: none; color: var(--danger); font-size: 24px; cursor: pointer; }
+
+/* --- انیمیشن --- */
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* گریدها و ریسپانسیو */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+
+@media (max-width: 768px) {
+    .sidebar { position: absolute; right: -280px; height: 100%; }
+    .sidebar.open { right: 0; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+<style>
+/* --- Login Page Styles --- */
+<style>
+/* --- Login Page Background Only --- */
+#loginPage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    /* رنگ پایه زرشکی تیره */
+    background-color: #2D0008; 
+
+    /* پترن خطوط طلایی متقاطع (لوزی شکل) */
+    background-image: 
+        /* خطوط مورب طلایی (سمت راست) */
+        repeating-linear-gradient(45deg, 
+            transparent 0, 
+            transparent 60px, 
+            rgba(212, 175, 55, 0.2) 60px, 
+            rgba(212, 175, 55, 0.2) 61px
+        ),
+        /* خطوط مورب طلایی (سمت چپ) */
+        repeating-linear-gradient(-45deg, 
+            transparent 0, 
+            transparent 60px, 
+            rgba(212, 175, 55, 0.2) 60px, 
+            rgba(212, 175, 55, 0.2) 61px
+        ),
+        /* سایه روشن مرکزی برای زیباتر شدن */
+        radial-gradient(circle at center, transparent 20%, #000000 100%);
+}
+
+/* این انیمیشن فقط برای حرکت آرام پس‌زمینه است (اختیاری) */
+#loginPage::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.5;
+    animation: rotateBackground 200s linear infinite;
+}
+
+@keyframes rotateBackground {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.login-card {
+    position: relative;
+    width: 90%;
+    max-width: 450px;
+    background: rgba(45, 0, 8, 0.85);
+    backdrop-filter: blur(20px);
+    border: 2px solid var(--gold-primary);
+    border-radius: 30px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(212, 175, 55, 0.2), inset 0 0 20px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+    animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.login-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+    transform: rotate(45deg);
+    animation: shimmer 6s infinite linear;
+    pointer-events: none;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.brand-logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    background: var(--gold-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    color: #2D0008;
+    box-shadow: 0 0 25px var(--gold-dark);
+    border: 3px solid #fff;
+}
+
+.login-title {
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 5px;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.login-subtitle {
+    font-size: 13px;
+    color: var(--text-gold);
+    margin-bottom: 30px;
+    opacity: 0.8;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 15px 45px 15px 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--gold-dark);
+    border-radius: 50px;
+    color: var(--gold-light);
+    font-size: 16px;
+    transition: 0.3s;
+    outline: none;
+    text-align: center;
+}
+
+.login-input:focus {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.input-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold-primary);
+    font-size: 18px;
+}
+
+.btn-login {
+    width: 100%;
+    padding: 16px;
+    border-radius: 50px;
+    font-size: 18px;
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.forgot-pass {
+    display: block;
+    margin-top: 20px;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.forgot-pass:hover {
+    color: var(--gold-light);
+    text-shadow: 0 0 5px var(--gold-primary);
+}
+</style>
+</head>
+<body>
+
+<div id="loginPage">
+    <div class="login-card">
+        <div class="brand-logo">
+            <i class="fa-solid fa-scissors"></i>
+        </div>
+        <h1 class="login-title">Royal Salon</h1>
+        <p class="login-subtitle">سیستم مدیریت حرفه‌ای آرایشگاه</p>
+        
+        <form onsubmit="event.preventDefault(); handleLogin();">
+            <div class="input-group">
+                <i class="fa-solid fa-user input-icon"></i>
+                <input type="text" id="loginUser" class="login-input" placeholder="نام کاربری" autocomplete="off" autofocus>
+            </div>
+            
+            <div class="input-group">
+                <i class="fa-solid fa-lock input-icon"></i>
+                <input type="password" id="loginPass" class="login-input" placeholder="رمز عبور">
+            </div>
+
+            <button type="submit" class="gold-btn btn-login">
+                ورود به سیستم <i class="fa-solid fa-arrow-left" style="margin-right:8px"></i>
+            </button>
+        </form>
+        
+        <a href="#" class="forgot-pass" onclick="alert('لطفاً با مدیریت تماس بگیرید')">رمز عبور را فراموش کرده‌اید؟</a>
+        <p id="loginError" style="color:var(--danger); margin-top:15px; font-size:13px; display:none; animation: shake 0.3s;">نام کاربری یا رمز عبور اشتباه است</p>
+    </div>
+</div>
+<style>
+/* --- Main Application Layout --- */
+#mainApp {
+    display: none; /* Hidden by default */
+    width: 100%;
+    height: 100%;
+    flex-direction: row;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 280px;
+    height: 100%;
+    background: rgba(45, 0, 8, 0.95);
+    backdrop-filter: blur(15px);
+    border-left: 1px solid var(--gold-dark);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    z-index: 100;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 5px 0 25px rgba(0,0,0,0.5);
+    flex-shrink: 0;
+}
+
+.sidebar-header {
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    margin-bottom: 20px;
+}
+
+.sidebar-logo {
+    font-size: 24px;
+    color: var(--gold-primary);
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+}
+
+.sidebar-title {
+    font-size: 20px;
+    font-weight: 900;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
+}
+
+.nav-menu {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 5px; /* For scrollbar space */
+}
+
+.nav-item {
+    padding: 14px 20px;
+    border-radius: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-item i {
+    width: 25px;
+    text-align: center;
+    font-size: 18px;
+    transition: 0.3s;
+}
+
+.nav-item:hover {
+    background: rgba(212, 175, 55, 0.1);
+    color: var(--gold-light);
+    border-color: rgba(212, 175, 55, 0.2);
+    transform: translateX(-5px);
+}
+
+.nav-item.active {
+    background: var(--gold-gradient);
+    color: #2D0008;
+    font-weight: 800;
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+}
+
+.nav-item.active i {
+    transform: scale(1.2);
+}
+
+.user-profile-mini {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 2px solid var(--gold-primary);
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-light);
+    font-size: 18px;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-name {
+    font-weight: bold;
+    color: var(--gold-light);
+    font-size: 14px;
+}
+
+.user-role {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.top-header {
+    height: 70px;
+    background: rgba(45, 0, 8, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    z-index: 90;
+}
+
+.page-title {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--gold-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-title::before {
+    content: '';
+    display: block;
+    width: 4px;
+    height: 24px;
+    background: var(--gold-gradient);
+    border-radius: 4px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--gold-dark);
+    background: rgba(0,0,0,0.3);
+    color: var(--gold-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 18px;
+}
+
+.icon-btn:hover {
+    background: var(--gold-primary);
+    color: #000;
+    box-shadow: 0 0 15px var(--gold-dark);
+}
+
+.date-display {
+    font-family: 'Vazirmatn';
+    background: rgba(212, 175, 55, 0.1);
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: 1px solid var(--gold-dark);
+    color: var(--gold-light);
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* Page Container */
+.page-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+    scroll-behavior: smooth;
+}
+
+.page {
+    display: none;
+    animation: fadeInPage 0.4s ease-out;
+}
+
+.page.active {
+    display: block;
+}
+
+@keyframes fadeInPage {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Glass Card Global Style */
+.card {
+    background: var(--bg-card);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--gold-gradient);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    padding-bottom: 15px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--gold-light);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .sidebar {
+        position: absolute;
+        right: -280px;
+    }
+    .sidebar.open {
+        right: 0;
+    }
+}
+</style>
+<style>
+/* --- Dashboard Widgets & Layouts --- */
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.grid-4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+/* Luxury Stat Cards */
+.stat-card {
+    background: linear-gradient(160deg, rgba(45, 0, 8, 0.7), rgba(0, 0, 0, 0.6));
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 20px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--gold-primary);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    width: 100px;
+    height: 100px;
+    background: var(--gold-primary);
+    filter: blur(60px);
+    opacity: 0.1;
+    border-radius: 50%;
+}
+
+.stat-icon-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(0, 0, 0, 0.4));
+    border: 1px solid var(--gold-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--gold-light);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.stat-info {
+    flex: 1;
+    z-index: 2;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.stat-value {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--text-main);
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.trend-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.trend-up { color: var(--success); background: rgba(0, 200, 83, 0.1); border: 1px solid rgba(0, 200, 83, 0.2); }
+.trend-down { color: var(--danger); background: rgba(255, 23, 68, 0.1); border: 1px solid rgba(255, 23, 68, 0.2); }
+
+/* --- Forms & Inputs --- */
+.form-group {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--gold-light);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.lux-input, .lux-select, .lux-textarea {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 14px;
+    transition: 0.3s;
+    backdrop-filter: blur(5px);
+}
+
+.lux-input:focus, .lux-select:focus, .lux-textarea:focus {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+    background: rgba(0, 0, 0, 0.5);
+    outline: none;
+    transform: scale(1.01);
+}
+
+.lux-input::placeholder { color: rgba(255,255,255,0.3); }
+
+/* --- Tables --- */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 16px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.lux-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+}
+
+.lux-table thead th {
+    background: linear-gradient(90deg, rgba(45,0,8,0.9), rgba(60,0,10,0.9));
+    color: var(--gold-primary);
+    padding: 18px 20px;
+    text-align: right;
+    font-weight: 800;
+    font-size: 13px;
+    border-bottom: 2px solid var(--gold-dark);
+    white-space: nowrap;
+}
+
+.lux-table tbody td {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    color: var(--text-main);
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.lux-table tbody tr {
+    transition: 0.2s;
+}
+
+.lux-table tbody tr:hover {
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.lux-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-cell img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 1px solid var(--gold-dark);
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-success { background: rgba(0, 200, 83, 0.15); color: #00E676; border: 1px solid rgba(0, 200, 83, 0.3); }
+.status-warning { background: rgba(255, 171, 0, 0.15); color: #FFD740; border: 1px solid rgba(255, 171, 0, 0.3); }
+.status-danger { background: rgba(255, 23, 68, 0.15); color: #FF5252; border: 1px solid rgba(255, 23, 68, 0.3); }
+.status-neutral { background: rgba(255, 255, 255, 0.1); color: #ccc; border: 1px solid rgba(255, 255, 255, 0.2); }
+
+@media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+</style>
+<style>
+/* --- Modals (Popups) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 0, 2, 0.9);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+    display: flex;
+    opacity: 1;
+}
+
+.lux-modal {
+    background: linear-gradient(145deg, rgba(40, 0, 8, 0.95), #1a0003);
+    border: 2px solid var(--gold-dark);
+    border-radius: 20px;
+    width: 95%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 0 50px rgba(0,0,0,0.8), 0 0 20px rgba(212, 175, 55, 0.1);
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-overlay.open .lux-modal {
+    transform: scale(1);
+}
+
+.modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.modal-title {
+    font-size: 18px;
+    color: var(--gold-primary);
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: var(--danger);
+    font-size: 24px;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.close-modal:hover {
+    background: rgba(255, 23, 68, 0.1);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    padding: 25px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 20px 25px;
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* --- POS / Service Cards Styles --- */
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+}
+
+.service-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.service-card:hover {
+    background: rgba(212, 175, 55, 0.05);
+    border-color: var(--gold-dark);
+}
+
+.service-card.selected {
+    background: rgba(212, 175, 55, 0.15);
+    border: 2px solid var(--gold-primary);
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+.service-card.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--gold-primary);
+    color: #000;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.service-icon {
+    font-size: 28px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.service-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.service-price {
+    font-size: 14px;
+    color: var(--gold-light);
+    font-weight: 900;
+}
+
+/* --- Toast Notifications --- */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    left: 20px; /* LTR friendly, but we are RTL so verify positioning */
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+/* RTL Adjustment */
+html[dir="rtl"] .toast-container {
+    left: auto;
+    right: 20px;
+}
+
+.lux-toast {
+    min-width: 300px;
+    background: rgba(45, 0, 8, 0.95);
+    backdrop-filter: blur(10px);
+    border-right: 4px solid var(--gold-primary); /* RTL border */
+    border-radius: 8px;
+    padding: 15px 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    animation: slideInToast 0.4s ease forwards;
+    position: relative;
+    overflow: hidden;
+}
+
+.lux-toast::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.05), transparent);
+    animation: shimmer 2s infinite;
+}
+
+.lux-toast.success { border-color: var(--success); }
+.lux-toast.error { border-color: var(--danger); }
+.lux-toast.info { border-color: var(--info); }
+
+.toast-icon { font-size: 20px; }
+.success .toast-icon { color: var(--success); }
+.error .toast-icon { color: var(--danger); }
+
+.toast-message {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+@keyframes slideInToast {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+</style>
+<style>
+/* --- Print Styles --- */
+@media print {
+    .sidebar, .top-header, .no-print, .gold-btn, .icon-btn { 
+        display: none !important; 
+    }
+    #mainApp {
+        display: block !important;
+        height: auto;
+        overflow: visible;
+    }
+    .main-content {
+        margin: 0;
+        padding: 0;
+        height: auto;
+        overflow: visible;
+    }
+    .page-container {
+        padding: 0;
+        overflow: visible;
+    }
+    .card {
+        background: #fff !important;
+        color: #000 !important;
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        break-inside: avoid;
+    }
+    .stat-card {
+        background: #fff !important;
+        border: 1px solid #000 !important;
+        color: #000 !important;
+    }
+    .stat-value, .stat-label {
+        color: #000 !important;
+    }
+    body {
+        background: #fff !important;
+        -webkit-print-color-adjust: exact;
+    }
+}
+</style>
+
+<div id="mainApp">
+    
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fa-solid fa-crown fa-spin-pulse" style="--fa-animation-duration: 3s;"></i>
+            </div>
+            <h2 class="sidebar-title">Royal Salon</h2>
+            <div style="font-size: 11px; color: var(--gold-dark); margin-top: 5px;">ACCOUNTING & CRM</div>
+        </div>
+
+        <nav class="nav-menu">
+            <div class="nav-item active" onclick="navigateTo('dashboard', this)">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>داشبورد مدیریتی</span>
+            </div>
+            
+            <div class="nav-item" onclick="navigateTo('accounting', this)">
+                <i class="fa-solid fa-cash-register"></i>
+                <span>امور مالی و حسابداری</span>
+            </div>
+            <div class="nav-item" onclick="navigateTo('appointments', this)">
+    <i class="fa-solid fa-calendar-check"></i>
+    <span>تقویم نوبت‌دهی</span>
+</div>
+            <div class="nav-item" onclick="navigateTo('services', this)">
+                <i class="fa-solid fa-scissors"></i>
+                <span>مدیریت خدمات & نرخ‌ها</span>
+            </div>
+
+            <div class="nav-item" onclick="navigateTo('customers', this)">
+                <i class="fa-solid fa-users"></i>
+                <span>باشگاه مشتریان (CRM)</span>
+            </div>
+
+            <div class="nav-item" onclick="navigateTo('personnel', this)">
+                <i class="fa-solid fa-id-card-clip"></i>
+                <span>پرسنل و حقوق</span>
+            </div>
+
+            <div class="nav-item" onclick="navigateTo('inventory', this)">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span>انبار و محصولات</span>
+            </div>
+
+            <div class="nav-item" onclick="navigateTo('reports', this)">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <span>گزارشات جامع</span>
+            </div>
+
+            <div class="nav-item" onclick="navigateTo('settings', this)">
+                <i class="fa-solid fa-gear"></i>
+                <span>تنظیمات سیستم</span>
+            </div>
+        </nav>
+
+        <div class="user-profile-mini">
+            <div class="user-avatar">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="sidebarUserName">مدیریت کل</div>
+                <div class="user-role">دسترسی کامل (Admin)</div>
+            </div>
+            <div onclick="handleLogout()" style="cursor:pointer; color:var(--danger)" title="خروج">
+                <i class="fa-solid fa-power-off"></i>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        
+        <header class="top-header">
+            <div class="page-title">
+                <i class="fa-solid fa-bars" onclick="toggleSidebar()" style="cursor:pointer; margin-left:10px; font-size:18px;"></i>
+                <span id="headerTitle">داشبورد مدیریتی</span>
+            </div>
+
+            <div class="header-actions">
+                <div class="date-display">
+                    <i class="fa-regular fa-calendar" style="margin-left:5px"></i>
+                    <span id="currentDateDisplay">1403/01/01</span>
+                </div>
+
+                <div class="icon-btn" onclick="toggleTheme()" title="تغییر تم">
+                    <i class="fa-solid fa-moon"></i>
+                </div>
+
+                <div class="icon-btn" onclick="showNotifications()" style="position:relative;">
+                    <i class="fa-regular fa-bell"></i>
+                    <span style="position:absolute; top:-2px; right:-2px; width:10px; height:10px; background:var(--danger); border-radius:50%; border:1px solid #000;"></span>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-container">
+
+            <div id="dashboard" class="page active">
+                
+                <div class="grid-4">
+                    <div class="stat-card">
+                        <div class="stat-icon-box" style="color:#00E676; border-color:rgba(0,230,118,0.3)">
+                            <i class="fa-solid fa-sack-dollar"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">درآمد امروز</div>
+                            <div class="stat-value" id="dashTodayIncome">0</div>
+                            <div class="trend-badge trend-up">
+                                <i class="fa-solid fa-arrow-trend-up"></i> <span>فعال</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon-box" style="color:#FF5252; border-color:rgba(255,82,82,0.3)">
+                            <i class="fa-solid fa-money-bill-transfer"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">هزینه‌های ماه</div>
+                            <div class="stat-value" id="dashMonthExpense">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon-box">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">مشتریان جدید</div>
+                            <div class="stat-value" id="dashNewCust">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card" style="border-color:var(--gold-primary); background: linear-gradient(160deg, rgba(212,175,55,0.15), rgba(0,0,0,0.6));">
+                        <div class="stat-icon-box" style="background:var(--gold-gradient); color:#000; border:none;">
+                            <i class="fa-solid fa-gem"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label" style="color:var(--gold-light)">سود خالص (ماه)</div>
+                            <div class="stat-value" id="dashNetProfit" style="color:var(--gold-primary)">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2" style="margin-top:25px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-chart-area" style="margin-left:8px"></i>نمودار درآمد و هزینه</div>
+                            <select class="lux-select" style="width:auto; padding:5px 10px; font-size:12px;">
+                                <option>این هفته</option>
+                                <option>این ماه</option>
+                                <option>امسال</option>
+                            </select>
+                        </div>
+                        <div style="height: 300px; position: relative;">
+                            <canvas id="mainChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-ranking-star" style="margin-left:8px"></i>خدمات پرطرفدار</div>
+                        </div>
+                        <div style="height: 300px; position: relative;">
+                            <canvas id="servicesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">آخرین تراکنش‌ها و فعالیت‌ها</div>
+                        <button class="gold-btn" style="padding:8px 15px; font-size:12px;" onclick="navigateTo('accounting', document.querySelectorAll('.nav-item')[1])">مشاهده همه</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="lux-table">
+                            <thead>
+                                <tr>
+                                    <th>زمان</th>
+                                    <th>توضیحات</th>
+                                    <th>مبلغ</th>
+                                    <th>نوع</th>
+                                    <th>توسط</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashRecentTxBody">
+                                <tr><td colspan="5" style="text-align:center; opacity:0.5;">داده‌ای موجود نیست</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+<div id="accounting" class="page">
+                <div class="card-header" style="background: transparent; border:none; padding:0; margin-bottom: 20px;">
+                    <h2 class="page-title" style="border:none;">امور مالی و حسابداری</h2>
+                    <div style="display:flex; gap:10px">
+                        <button class="gold-btn" onclick="openModal('modalNewTx', 'income')">
+                            <i class="fa-solid fa-plus"></i> ثبت درآمد
+                        </button>
+                        <button class="gold-btn" style="background: linear-gradient(135deg, #8E0E00, #1F1C18); color:#fff;" onclick="openModal('modalNewTx', 'expense')">
+                            <i class="fa-solid fa-minus"></i> ثبت هزینه
+                        </button>
+                        <button class="icon-btn" onclick="exportToExcel('accountingTable')" title="خروجی اکسل">
+                            <i class="fa-solid fa-file-excel"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid-3">
+                    <div class="stat-card" style="border-right: 4px solid var(--success);">
+                        <div class="stat-info">
+                            <div class="stat-label">کل دریافتی‌ها</div>
+                            <div class="stat-value" id="accTotalIncome" style="color:var(--success)">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="border-right: 4px solid var(--danger);">
+                        <div class="stat-info">
+                            <div class="stat-label">کل هزینه‌ها</div>
+                            <div class="stat-value" id="accTotalExpense" style="color:var(--danger)">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card" style="border-right: 4px solid var(--gold-primary);">
+                        <div class="stat-info">
+                            <div class="stat-label">تراز مالی کل</div>
+                            <div class="stat-value" id="accBalance">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel" style="margin: 20px 0; padding: 15px; display:flex; flex-wrap:wrap; gap:15px; align-items:center;">
+                    <i class="fa-solid fa-filter" style="color:var(--gold-primary)"></i>
+                    <input type="text" class="lux-input" placeholder="جستجو در شرح..." id="accSearch" style="width:200px" onkeyup="filterAccounting()">
+                    <select class="lux-select" id="accFilterType" onchange="filterAccounting()" style="width:150px">
+                        <option value="all">همه تراکنش‌ها</option>
+                        <option value="income">درآمدها</option>
+                        <option value="expense">هزینه‌ها</option>
+                    </select>
+                    <input type="date" class="lux-input" id="accDateFilter" style="width:auto" onchange="filterAccounting()">
+                    <button class="icon-btn" onclick="renderAccounting()" style="width:35px; height:35px;"><i class="fa-solid fa-rotate-right"></i></button>
+                </div>
+
+                <div class="table-container">
+                    <table class="lux-table" id="accountingTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>تاریخ & زمان</th>
+                                <th>نوع</th>
+                                <th>دسته‌بندی</th>
+                                <th>شرح / بابت</th>
+                                <th>مبلغ (افغانی)</th>
+                                <th>کاربر</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accountingBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+<div id="appointments" class="page">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; border-bottom: 1px solid var(--gold-dark); padding-bottom: 15px;">
+        <h2 style="color: var(--gold-primary); margin: 0; font-size: 18px;">
+            <i class="fa-solid fa-calendar-check" style="margin-left: 10px;"></i>تقویم نوبت‌دهی
+        </h2>
+        <button class="gold-btn" onclick="openModal('modalAppointment')">
+            <i class="fa-solid fa-plus"></i> نوبت جدید
+        </button>
+    </div>
+
+    <div style="background:rgba(212,175,55,0.1); padding:10px; border-radius:10px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--gold-dark);">
+        <span style="color:var(--text-muted); font-size:12px;">نوبت‌های امروز</span>
+        <button class="icon-btn" onclick="loadAppointments()" title="بروزرسانی لیست" style="width:30px; height:30px;">
+            <i class="fa-solid fa-rotate"></i>
+        </button>
+    </div>
+
+    <div id="appointmentGrid" class="grid-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+    </div>
+</div>
+            <div id="services" class="page">
+                <div class="card-header">
+                    <div class="card-title">لیست خدمات و نرخ‌ها</div>
+                    <button class="gold-btn" onclick="openModal('modalService')">
+                        <i class="fa-solid fa-scissors"></i> تعریف خدمت جدید
+                    </button>
+                </div>
+
+                <div class="form-group" style="max-width: 400px; margin-bottom:25px;">
+                    <div class="input-group">
+                        <input type="text" class="lux-input" placeholder="جستجوی نام خدمت..." onkeyup="renderServices(this.value)">
+                    </div>
+                </div>
+
+                <div class="service-grid" id="servicesGrid">
+                    </div>
+            </div>
+<div id="customers" class="page">
+                <div class="card-header">
+                    <div class="card-title">باشگاه مشتریان (CRM)</div>
+                    <button class="gold-btn" onclick="openModal('modalCustomer')">
+                        <i class="fa-solid fa-user-plus"></i> مشتری جدید
+                    </button>
+                </div>
+
+                <div class="grid-2">
+                    <div class="stat-card">
+                        <div class="stat-icon-box" style="color:#00E676; border-color:rgba(0,230,118,0.3)">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-label">تعداد کل مشتریان</div>
+                            <div class="stat-value" id="crmTotalCust">0</div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="display:flex; align-items:center;">
+                        <input type="text" class="lux-input" placeholder="جستجو (نام، موبایل)..." id="crmSearch" onkeyup="renderCustomers()">
+                    </div>
+                </div>
+
+                <div class="table-container" style="margin-top:20px;">
+                    <table class="lux-table" id="customersTable">
+                        <thead>
+                            <tr>
+                                <th>نام مشتری</th>
+                                <th>موبایل</th>
+                                <th>آخرین بازدید</th>
+                                <th>تعداد مراجعات</th>
+                                <th>امتیاز وفاداری</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="personnel" class="page">
+                <div class="card-header">
+                    <div class="card-title">مدیریت پرسنل و حقوق</div>
+                    <button class="gold-btn" onclick="openModal('modalStaff')">
+                        <i class="fa-solid fa-id-card"></i> استخدام پرسنل
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="lux-table">
+                        <thead>
+                            <tr>
+                                <th>نام پرسنل</th>
+                                <th>نقش / تخصص</th>
+                                <th>حقوق ثابت</th>
+                                <th>درصد کمیسیون</th>
+                                <th>وضعیت</th>
+                                <th>عملکرد ماه</th>
+                                <th>مدیریت</th>
+                            </tr>
+                        </thead>
+                        <tbody id="personnelBody">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div class="card" style="margin-top:30px; border-color:var(--gold-dark);">
+                    <div class="card-header">
+                        <div class="card-title">محاسبه حقوق و دستمزد (Payroll)</div>
+                    </div>
+                    <div class="grid-3" style="align-items:end;">
+                        <div class="form-group">
+                            <label class="form-label">انتخاب پرسنل</label>
+                            <select class="lux-select" id="payrollStaffSel"></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ماه / سال</label>
+                            <div style="display:flex; gap:5px;">
+                                <select class="lux-select" id="payrollMonth"></select>
+                               <input type="number" id="payrollYear" class="lux-input" value="1403" style="width:80px;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button class="gold-btn" style="width:100%" onclick="calculateSalary()">
+                                <i class="fa-solid fa-calculator"></i> محاسبه فیش حقوقی
+                            </button>
+                        </div>
+                    </div>
+                    <div id="payrollResult" style="display:none; margin-top:20px; padding:15px; border:1px dashed var(--gold-primary); border-radius:12px;">
+                        </div>
+                </div>
+            </div>
+
+            <div id="inventory" class="page">
+                <div class="card-header">
+                    <div class="card-title">انبار و موجودی کالا</div>
+                    <button class="gold-btn" onclick="openModal('modalProduct')">
+                        <i class="fa-solid fa-box-open"></i> کالا جدید
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="lux-table">
+                        <thead>
+                            <tr>
+                                <th>نام کالا</th>
+                                <th>برند</th>
+                                <th>تعداد موجود</th>
+                                <th>قیمت خرید</th>
+                                <th>قیمت مصرف/فروش</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryBody">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+<div id="reports" class="page">
+                <div class="card-header">
+                    <div class="card-title">گزارشات و تحلیل‌های آماری</div>
+                    <button class="gold-btn" onclick="printReport()">
+                        <i class="fa-solid fa-print"></i> چاپ گزارش جاری
+                    </button>
+                </div>
+
+                <div class="grid-3">
+                    <div class="card" style="cursor:pointer" onclick="generateReport('daily')">
+                        <div style="text-align:center">
+                            <i class="fa-solid fa-calendar-day" style="font-size:40px; color:var(--gold-primary); margin-bottom:15px"></i>
+                            <h3 style="color:#fff">گزارش روزانه</h3>
+                            <p style="color:var(--text-muted); font-size:12px">خلاصه عملکرد امروز</p>
+                        </div>
+                    </div>
+                    <div class="card" style="cursor:pointer" onclick="generateReport('monthly')">
+                        <div style="text-align:center">
+                            <i class="fa-solid fa-calendar-days" style="font-size:40px; color:var(--info); margin-bottom:15px"></i>
+                            <h3 style="color:#fff">گزارش ماهانه</h3>
+                            <p style="color:var(--text-muted); font-size:12px">تحلیل درآمد و هزینه ماه</p>
+                        </div>
+                    </div>
+                    <div class="card" style="cursor:pointer" onclick="generateReport('staff')">
+                        <div style="text-align:center">
+                            <i class="fa-solid fa-user-group" style="font-size:40px; color:var(--success); margin-bottom:15px"></i>
+                            <h3 style="color:#fff">عملکرد پرسنل</h3>
+                            <p style="color:var(--text-muted); font-size:12px">کی بهترین عملکرد را داشته؟</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reportResultArea" style="margin-top:30px; display:none;">
+                    <div class="glass-panel" style="padding:20px;">
+                        <h3 id="reportTitle" style="color:var(--gold-light); border-bottom:1px dashed var(--gold-dark); padding-bottom:10px; margin-bottom:15px;">عنوان گزارش</h3>
+                        <div id="reportContent"></div>
+                    </div>
+                </div>
+            </div>
+<div id="settings" class="page">
+    <div class="card-header">
+        <div class="card-title">پنل تنظیمات سیستم</div>
+    </div>
+
+    <div class="grid-3">
+        <div class="card service-card" onclick="openModal('modalSetGeneral')" style="text-align:center; height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <i class="fa-solid fa-store" style="font-size:40px; color:var(--gold-primary); margin-bottom:15px;"></i>
+            <h3 style="color:#fff;">مشخصات سالن</h3>
+            <p style="color:var(--text-muted); font-size:12px; margin-top:5px;">نام، آدرس و تلفن</p>
+        </div>
+
+        <div class="card service-card" onclick="openModal('modalSetCurrency')" style="text-align:center; height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <i class="fa-solid fa-money-bill-wave" style="font-size:40px; color:var(--success); margin-bottom:15px;"></i>
+            <h3 style="color:#fff;">واحد پول</h3>
+            <p style="color:var(--text-muted); font-size:12px; margin-top:5px;">تومان، دلار، یورو و...</p>
+        </div>
+
+        <div class="card service-card" onclick="openModal('modalSetTax')" style="text-align:center; height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <i class="fa-solid fa-scale-balanced" style="font-size:40px; color:var(--danger); margin-bottom:15px;"></i>
+            <h3 style="color:#fff;">مدیریت مالیات</h3>
+            <p style="color:var(--text-muted); font-size:12px; margin-top:5px;">گزارشات فصلی و سالانه</p>
+        </div>
+
+        <div class="card service-card" onclick="openModal('modalChangePass')" style="text-align:center; height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <i class="fa-solid fa-shield-halved" style="font-size:40px; color:var(--info); margin-bottom:15px;"></i>
+            <h3 style="color:#fff;">امنیت حساب</h3>
+            <p style="color:var(--text-muted); font-size:12px; margin-top:5px;">تغییر رمز عبور مدیریت</p>
+        </div>
+
+        <div class="card service-card" onclick="openModal('modalSetBackup')" style="text-align:center; height:180px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+            <i class="fa-solid fa-database" style="font-size:40px; color:var(--warning); margin-bottom:15px;"></i>
+            <h3 style="color:#fff;">پشتیبان‌گیری</h3>
+            <p style="color:var(--text-muted); font-size:12px; margin-top:5px;">دانلود و بازیابی اطلاعات</p>
+        </div>
+    </div>
+</div>
+        </div> </main>
+</div>
+
+<div class="modal-overlay" id="modalNewTx">
+    <div class="lux-modal">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fa-solid fa-coins"></i> <span id="modalTxTitle">ثبت تراکنش جدید</span></div>
+            <button class="close-modal" onclick="closeModal('modalNewTx')">&times;</button>
+        </div>
+<div class="form-group" style="background:rgba(212,175,55,0.05); padding:10px; border-radius:8px; border:1px dashed var(--gold-dark); margin-top:10px;">
+    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; color:var(--text-main);">
+        <input type="checkbox" id="txTaxApply" style="width:18px; height:18px; accent-color:var(--gold-primary);">
+        <span>محاسبه و افزودن مالیات (طبق تنظیمات)</span>
+    </label>
+    <div id="taxCalcResult" style="font-size:12px; color:var(--gold-light); margin-top:5px; padding-right:28px;"></div>
+</div>
+        <div class="modal-body">
+            <input type="hidden" id="txType">
+            
+            <div class="form-group">
+                <label class="form-label">مبلغ (افغانی)</label>
+                <input type="number" id="txAmount" class="lux-input" style="font-size:20px; font-weight:bold; color:var(--gold-light); direction:ltr; text-align:left;" placeholder="0">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">دسته‌بندی</label>
+                <select id="txCategory" class="lux-select">
+                    </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">توضیحات / بابت</label>
+                <input type="text" id="txDesc" class="lux-input" placeholder="...">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">طرف حساب (اختیاری)</label>
+                <select id="txRelatedUser" class="lux-select">
+                    <option value="">-- انتخاب --</option>
+                    </select>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button class="gold-btn" onclick="submitTransaction()">ثبت نهایی</button>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="modalAppointment">
+    <div class="lux-modal">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fa-regular fa-calendar-plus"></i> ثبت نوبت رزرو</div>
+            <button class="close-modal" onclick="closeModal('modalAppointment')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">مشتری</label>
+                <div style="display:flex; gap:5px;">
+                    <select id="aptCustomer" class="lux-select">
+                        <option value="">-- انتخاب مشتری --</option>
+                    </select>
+                    <button class="icon-btn" onclick="openModal('modalCustomer')" title="مشتری جدید"><i class="fa-solid fa-plus"></i></button>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">تاریخ</label>
+                    <input type="text" id="aptDateInput" class="lux-input" placeholder="1403/01/01">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ساعت شروع</label>
+                    <input type="time" id="aptTimeInput" class="lux-input">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">خدمت درخواستی</label>
+                    <select id="aptService" class="lux-select">
+                        <option value="">-- انتخاب خدمت --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">آرایشگر</label>
+                    <select id="aptStaff" class="lux-select">
+                        <option value="">-- انتخاب پرسنل --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">وضعیت</label>
+                    <select id="aptStatus" class="lux-select">
+                        <option value="scheduled">رزرو شده</option>
+                        <option value="confirmed">تایید شده</option>
+                        <option value="completed">انجام شد</option>
+                        <option value="canceled">لغو شد</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">بیعانه (اختیاری)</label>
+                    <input type="number" id="aptDeposit" class="lux-input" placeholder="0">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">یادداشت</label>
+                <textarea id="aptNote" class="lux-textarea" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="gold-btn" onclick="saveAppointment()">ثبت نوبت</button>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="modalService">
+    <div class="lux-modal">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fa-solid fa-scissors"></i> تعریف خدمت جدید</div>
+            <button class="close-modal" onclick="closeModal('modalService')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">نام خدمت</label>
+                <input type="text" id="srvName" class="lux-input" placeholder="مثلاً: کوتاهی مو کلاسیک">
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">دسته بندی</label>
+                    <select id="srvCat" class="lux-select">
+                        <option value="hair">مو و کوتاهی</option>
+                        <option value="color">رنگ و مش</option>
+                        <option value="skin">پوست و پاکسازی</option>
+                        <option value="makeup">میکاپ و گریم</option>
+                        <option value="nail">ناخن</option>
+                        <option value="other">سایر</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">زمان تقریبی (دقیقه)</label>
+                    <input type="number" id="srvDuration" class="lux-input" placeholder="30">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">قیمت پایه (افغانی)</label>
+                <input type="number" id="srvPrice" class="lux-input" style="font-weight:bold; color:var(--gold-light);">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">آیکون (فونت آوسام)</label>
+                <input type="text" id="srvIcon" class="lux-input" placeholder="fa-solid fa-scissors" dir="ltr">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="gold-btn" onclick="saveService()">ذخیره خدمت</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalCustomer">
+    <div class="lux-modal">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fa-solid fa-user-plus"></i> ثبت مشتری جدید</div>
+            <button class="close-modal" onclick="closeModal('modalCustomer')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">نام و نام خانوادگی</label>
+                    <input type="text" id="custName" class="lux-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">شماره موبایل</label>
+                    <input type="tel" id="custPhone" class="lux-input" dir="ltr">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">تاریخ تولد (اختیاری)</label>
+                <input type="text" id="custBirth" class="lux-input" placeholder="1370/01/01">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">یادداشت‌های خاص (حساسیت، سلیقه و...)</label>
+                <textarea id="custNotes" class="lux-textarea" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="gold-btn" onclick="saveCustomer()">افزودن به باشگاه مشتریان</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalStaff">
+    <div class="lux-modal">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fa-solid fa-id-badge"></i> تعریف پرسنل</div>
+            <button class="close-modal" onclick="closeModal('modalStaff')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">نام پرسنل</label>
+                <input type="text" id="stfName" class="lux-input">
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">نقش / تخصص</label>
+                    <input type="text" id="stfRole" class="lux-input" placeholder="مثلاً: هیر استایلیست">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">موبایل</label>
+                    <input type="tel" id="stfPhone" class="lux-input" dir="ltr">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">حقوق ثابت (افغانی)</label>
+                    <input type="number" id="stfBaseSalary" class="lux-input" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">درصد کمیسیون (%)</label>
+                    <input type="number" id="stfComm" class="lux-input" placeholder="30">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="gold-btn" onclick="saveStaff()">استخدام</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalProduct">
+    <div class="lux-modal">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fa-solid fa-box"></i> کالا / محصول جدید</div>
+            <button class="close-modal" onclick="closeModal('modalProduct')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">نام کالا</label>
+                <input type="text" id="prdName" class="lux-input" placeholder="مثلاً: شامپو کراتین">
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">برند</label>
+                    <input type="text" id="prdBrand" class="lux-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">تعداد موجودی اولیه</label>
+                    <input type="number" id="prdStock" class="lux-input">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label class="form-label">قیمت خرید (افغانی)</label>
+                    <input type="number" id="prdBuyPrice" class="lux-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">قیمت فروش/مصرف (تومان)</label>
+                    <input type="number" id="prdSellPrice" class="lux-input" style="color:var(--gold-light); font-weight:bold">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="gold-btn" onclick="saveProduct()">ذخیره در انبار</button>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="modalChangePass">
+    <div class="lux-modal">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fa-solid fa-lock"></i> تغییر مشخصات ورود</div>
+            <button class="close-modal" onclick="closeModal('modalChangePass')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">نام کاربری جدید</label>
+                <input type="text" id="newUsername" class="lux-input" placeholder="admin">
+            </div>
+            <div class="form-group">
+                <label class="form-label">رمز عبور جدید</label>
+                <input type="password" id="newPassword" class="lux-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">تکرار رمز عبور جدید</label>
+                <input type="password" id="confirmPassword" class="lux-input">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="gold-btn" onclick="saveNewPassword()">ذخیره تغییرات</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalSetGeneral">
+    <div class="lux-modal">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fa-solid fa-store"></i> مشخصات سالن</div>
+            <button class="close-modal" onclick="closeModal('modalSetGeneral')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">نام سالن</label>
+                <input type="text" id="setSalonName" class="lux-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">آدرس</label>
+                <input type="text" id="setAddress" class="lux-input">
+            </div>
+            <div class="form-group">
+                <label class="form-label">تلفن تماس</label>
+                <input type="text" id="setPhone" class="lux-input">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="gold-btn" onclick="saveGeneralSettings()">ذخیره مشخصات</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalSetCurrency">
+    <div class="lux-modal" style="max-width: 400px;">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fa-solid fa-coins"></i> تنظیم واحد پول</div>
+            <button class="close-modal" onclick="closeModal('modalSetCurrency')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">واحد پول سیستم را انتخاب کنید:</label>
+                <select id="setCurrencySelect" class="lux-select">
+                     <option value="AFN">افغانی (AFN)</option>
+                    <option value="تومان">تومان (Toman)</option>
+                    <option value="ریال">ریال (Rial)</option>
+                    <option value="$">دلار ($)</option>
+                    <option value="€">یورو (€)</option>
+                    <option value="AED">درهم (AED)</option>
+                </select>
+                <p style="font-size:11px; color:var(--text-muted); margin-top:10px;">نکته: با تغییر ارز، فقط نماد پول تغییر می‌کند.</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="gold-btn" onclick="saveCurrencySettings()">تایید و ذخیره</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="modalSetTax">
+    <div class="lux-modal">
+        <div class="modal-header">
+            <div class="modal-title"><i class="fa-solid fa-file-invoice-dollar"></i> مرکز مالیات</div>
+            <button class="close-modal" onclick="closeModal('modalSetTax')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:20px;">
+                <label class="form-label" style="color:var(--gold-primary)">نرخ مالیات بر ارزش افزوده (%)</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="setTaxRateInput" class="lux-input" placeholder="مثلاً 9" style="text-align:center; font-size:18px;">
+                    <button class="gold-btn" onclick="saveTaxRateOnly()" style="width:100px;">ذخیره نرخ</button>
+                </div>
+            </div>
+
+            <h3 style="color:var(--text-main); font-size:14px; margin-bottom:10px; border-bottom:1px solid var(--gold-dark); padding-bottom:5px;">گزارش‌گیری مالیاتی</h3>
+            
+            <div class="grid-2">
+                <div class="card" style="margin-bottom:0; padding:15px; border:1px solid var(--info);">
+                    <div style="font-weight:bold; color:var(--info); margin-bottom:10px;">گزارش فصلی (3 ماهه)</div>
+                    <select id="taxSeasonSelect" class="lux-select" style="margin-bottom:10px; font-size:12px;">
+                        <option value="1">بهار (فروردین - خرداد)</option>
+                        <option value="2">تابستان (تیر - شهریور)</option>
+                        <option value="3">پاییز (مهر - آذر)</option>
+                        <option value="4">زمستان (دی - اسفند)</option>
+                    </select>
+                    <button class="icon-btn" style="width:100%; border-radius:8px; font-size:13px;" onclick="calculateTaxReport('seasonal')">
+                        محاسبه فصل
+                    </button>
+                </div>
+
+                <div class="card" style="margin-bottom:0; padding:15px; border:1px solid var(--success);">
+                    <div style="font-weight:bold; color:var(--success); margin-bottom:10px;">گزارش سالانه (کامل)</div>
+                    <input type="number" id="taxYearInput" class="lux-input" value="1403" style="margin-bottom:10px;">
+                    <button class="icon-btn" style="width:100%; border-radius:8px; font-size:13px;" onclick="calculateTaxReport('annual')">
+                        محاسبه کل سال
+                    </button>
+                </div>
+            </div>
+
+            <div id="taxReportResult" style="margin-top:20px; display:none; background:rgba(0,0,0,0.3); padding:15px; border-radius:10px; border:1px dashed var(--gold-primary);">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="modal-overlay" id="modalSetBackup">
+    <div class="lux-modal" style="max-width:400px;">
+        <div class="modal-header">
+            <div class="modal-title">پشتیبان‌گیری</div>
+            <button class="close-modal" onclick="closeModal('modalSetBackup')">&times;</button>
+        </div>
+        <div class="modal-body" style="text-align:center;">
+            <button class="gold-btn" style="width:100%; margin-bottom:15px;" onclick="exportBackup()">
+                <i class="fa-solid fa-download"></i> دانلود فایل پشتیبان
+            </button>
+            <button class="gold-btn" style="width:100%; background:#333; color:#fff;" onclick="document.getElementById('importFile').click()">
+                <i class="fa-solid fa-upload"></i> بازیابی اطلاعات
+            </button>
+            <input type="file" id="importFile" style="display:none" onchange="importBackup(this)">
+        </div>
+    </div>
+</div>
+</div>
+<div class="toast-container" id="toastArea"></div>
+<script>
+let db = {
+    transactions: [],
+    services: [],
+    customers: [],
+    staff: [],
+    inventory: [],
+    settings: {
+        name: 'Royal Salon',
+        address: '',
+        phone: '',
+        theme: 'dark',        
+        currency: 'AFN',      
+        taxRate: 0            
+    }
+};
+
+let currentUser = {
+    name: 'مدیریت',
+    role: 'admin'
+};
+
+const STORAGE_KEY = 'RoyalSalonDB_V1';
+
+function initApp() {
+    loadData();
+    updateDateDisplay();
+    setupCharts();
+    renderDashboard();
+    
+    if (db.settings.theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
+
+    document.getElementById('setSalonName').value = db.settings.name;
+    document.getElementById('setAddress').value = db.settings.address;
+    document.getElementById('setPhone').value = db.settings.phone;
+    document.getElementById('sidebarUserName').innerText = db.settings.name || 'مدیریت';
+
+    if(window.innerWidth < 900) {
+        document.getElementById('sidebar').classList.remove('open');
+    }
+loadSettingsToInputs();
+}
+
+function loadData() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        db = JSON.parse(saved);
+    } else {
+        seedDummyData();
+    }
+}
+
+function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+    updateCharts();
+}
+
+function seedDummyData() {
+    // قیمت‌ها به افغانی اصلاح شدند
+    db.services = [
+        { id: 1, name: 'کوتاهی مو (کلاسیک)', category: 'hair', price: 300, duration: 45, icon: 'fa-solid fa-scissors' },
+        { id: 2, name: 'رنگ و مش حرفه‌ای', category: 'color', price: 1500, duration: 120, icon: 'fa-solid fa-paintbrush' },
+        { id: 3, name: 'پدیکور VIP', category: 'nail', price: 500, duration: 60, icon: 'fa-solid fa-shoe-prints' },
+        { id: 4, name: 'پاکسازی پوست', category: 'skin', price: 800, duration: 90, icon: 'fa-solid fa-spa' }
+    ];
+
+    db.staff = [
+        { id: 1, name: 'سارا محمدی', role: 'هیر استایلیست', phone: '0790000000', baseSalary: 12000, comm: 30 },
+        { id: 2, name: 'نازنین راد', role: 'ناخن کار', phone: '0780000000', baseSalary: 8000, comm: 40 }
+    ];
+db.appointments = []; 
+db.appointments.push({
+    id: 'appt1', customer: 'نازنین احمدی', barber: 'سارا محمدی', service: 'کوتاهی مو (کلاسیک)', 
+    date: getTodayJalaliDate(), startTime: '10:00', endTime: '10:45', duration: 45, status: 'رزرو', 
+    note: 'موی کوتاه', created_at: Date.now()
+});
+db.appointments.push({
+    id: 'appt2', customer: 'مریم حسینی', barber: 'نازنین راد', service: 'پاکسازی پوست', 
+    date: getTodayJalaliDate(), startTime: '11:30', endTime: '13:00', duration: 90, status: 'رزرو', 
+    note: 'حساسیت به مرکبات', created_at: Date.now()
+});
+ 
+    saveData();
+}
+function navigateTo(pageId, btnEl) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+
+    if (btnEl) {
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        btnEl.classList.add('active');
+    }
+
+    const titleMap = {
+        'dashboard': 'داشبورد مدیریتی',
+        'accounting': 'امور مالی و حسابداری',
+        'services': 'مدیریت خدمات',
+        'customers': 'باشگاه مشتریان',
+        'personnel': 'مدیریت پرسنل',
+        'inventory': 'انبارداری',
+        'reports': 'گزارشات',
+        'settings': 'تنظیمات سیستم'
+    };
+    document.getElementById('headerTitle').innerText = titleMap[pageId] || 'Royal Salon';
+
+    if (pageId === 'dashboard') renderDashboard();
+    if (pageId === 'appointments') loadAppointments();
+    if (pageId === 'accounting') renderAccounting();
+    if (pageId === 'services') renderServices();
+    if (pageId === 'customers') renderCustomers();
+    if (pageId === 'personnel') renderPersonnel();
+    if (pageId === 'inventory') renderInventory();
+    if(window.innerWidth < 900) {
+        document.getElementById('sidebar').classList.remove('open');
+    }
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+}
+
+function toggleTheme() {
+    const html = document.documentElement;
+    const current = html.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    db.settings.theme = next;
+    saveData();
+}
+
+function updateDateDisplay() {
+    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+    const dateStr = new Date().toLocaleDateString('fa-IR', options);
+    document.getElementById('currentDateDisplay').innerText = dateStr;
+}
+
+function formatMoney(amount) {
+    return new Intl.NumberFormat('fa-IR').format(amount);
+}
+
+// --- توابع کمکی نوبت‌دهی (جدید) ---
+// --- توابع کمکی نوبت‌دهی (جدید) ---
+function generateId() {
+    // ساخت یک شناسه یکتا برای اشیاء جدید
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
+
+function getTodayJalaliDate() {
+    // تابع فرضی برای گرفتن تاریخ امروز شمسی
+    try {
+        // این روش تاریخ شمسی را برمی‌گرداند. اگر برنامه شما تاریخ میلادی است، از این خط استفاده کنید: 
+        // return new Date().toISOString().substring(0, 10);
+        return new Date().toLocaleDateString('fa-IR').replace(/‏/g, ''); 
+    } catch (e) {
+        // تاریخ پیش‌فرض در صورت خطا
+        return "1404/09/25"; 
+    }
+}
+
+// این تابع مدت زمان خدمات را از دیتابیس می‌گیرد.
+function getServiceDuration(serviceName) {
+    // اطمینان حاصل کنید که db.services در جای دیگری تعریف و پر شده است.
+    const service = db.services.find(s => s.name === serviceName);
+    // اگر خدمت پیدا نشد، 60 دقیقه پیش‌فرض بگیرید.
+    return service ? (parseInt(service.duration) || 60) : 60; 
+}
+
+function calculateEndTime(startTime, durationMinutes) {
+    // محاسبه زمان پایان بر اساس زمان شروع (مثلاً 14:30) و مدت زمان
+    const [hours, minutes] = startTime.split(':').map(Number);
+    // ساخت یک شیء Date موقت
+    let date = new Date(2000, 0, 1, hours, minutes, 0);
+    // اضافه کردن مدت زمان (به میلی‌ثانیه)
+    date.setTime(date.getTime() + durationMinutes * 60 * 1000);
+    
+    // استخراج زمان پایان به فرمت 'HH:MM'
+    const endHours = String(date.getHours()).padStart(2, '0');
+    const endMinutes = String(date.getMinutes()).padStart(2, '0');
+    
+    return `${endHours}:${endMinutes}`;
+}
+function openModal(modalId, context = null) {
+    const overlay = document.getElementById(modalId);
+    overlay.classList.add('open');
+    
+    if (modalId === 'modalNewTx') {
+        document.getElementById('txType').value = context || 'income';
+        const title = context === 'income' ? 'ثبت درآمد جدید' : 'ثبت هزینه جدید';
+        document.getElementById('modalTxTitle').innerText = title;
+        populateTxCategories(context);
+        populateRelatedUsers();
+    }
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.remove('open');
+    const inputs = document.querySelectorAll(`#${modalId} input, #${modalId} select, #${modalId} textarea`);
+    inputs.forEach(i => i.value = '');
+}
+
+function handleLogin() {
+    const u = document.getElementById('loginUser').value;
+    const p = document.getElementById('loginPass').value;
+    
+    // خواندن اطلاعات ذخیره شده (چون هنوز وارد برنامه نشده‌ایم باید مستقیم از LocalStorage بخوانیم)
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    let validUser = 'admin';
+    let validPass = 'admin';
+
+    if (savedData) {
+        const parsed = JSON.parse(savedData);
+        if (parsed.settings && parsed.settings.auth) {
+            validUser = parsed.settings.auth.user;
+            validPass = parsed.settings.auth.pass;
+        }
+    }
+    
+    // بررسی صحت رمز
+    if (u === validUser && p === validPass) {
+        localStorage.setItem('isLoggedIn', 'true');
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'flex';
+        initApp();
+    } else {
+        const err = document.getElementById('loginError');
+        err.style.display = 'block';
+        err.innerText = 'نام کاربری یا رمز عبور اشتباه است';
+        setTimeout(() => err.style.display = 'none', 3000);
+    }
+}
+
+function handleLogout() {
+    if(confirm('آیا از حساب کاربری خارج می‌شوید؟')) {
+localStorage.removeItem('isLoggedIn');
+        location.reload();
+    }
+}
+</script>
+<script>
+/* --- Dashboard & Charts Logic --- */
+let incomeChartInstance = null;
+let serviceChartInstance = null;
+
+function renderDashboard() {
+    // Calculate Stats
+    const today = new Date().toLocaleDateString('fa-IR');
+    const thisMonth = new Date().toLocaleDateString('fa-IR', {year:'numeric', month:'numeric'}); // e.g., "1403/01"
+
+    let todayIncome = 0;
+    let monthExpense = 0;
+    let monthIncome = 0;
+
+    db.transactions.forEach(tx => {
+        const txDate = new Date(tx.date).toLocaleDateString('fa-IR');
+        const txMonth = new Date(tx.date).toLocaleDateString('fa-IR', {year:'numeric', month:'numeric'});
+
+        if (tx.type === 'income') {
+            if (txDate === today) todayIncome += tx.amount;
+            if (txMonth === thisMonth) monthIncome += tx.amount;
+        } else {
+            if (txMonth === thisMonth) monthExpense += tx.amount;
+        }
+    });
+
+    const netProfit = monthIncome - monthExpense;
+    
+    // Update DOM
+    document.getElementById('dashTodayIncome').innerText = formatMoney(todayIncome);
+    document.getElementById('dashMonthExpense').innerText = formatMoney(monthExpense);
+    document.getElementById('dashNetProfit').innerText = formatMoney(netProfit);
+    document.getElementById('dashNewCust').innerText = db.customers.length;
+
+    // Recent Transactions Table
+    const recentTx = db.transactions.slice(-5).reverse();
+    const tbody = document.getElementById('dashRecentTxBody');
+    
+    if(recentTx.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; opacity:0.5; padding:20px;">داده‌ای موجود نیست</td></tr>';
+    } else {
+        tbody.innerHTML = recentTx.map(tx => {
+            const isInc = tx.type === 'income';
+            const color = isInc ? 'var(--success)' : 'var(--danger)';
+            const icon = isInc ? 'fa-arrow-down' : 'fa-arrow-up';
+            return `
+                <tr>
+                    <td style="font-size:12px; color:var(--text-muted)">${new Date(tx.date).toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'})}</td>
+                    <td>${tx.desc}</td>
+                    <td style="color:${color}; font-weight:bold; direction:ltr">${formatMoney(tx.amount)}</td>
+                    <td><span class="status-badge ${isInc ? 'status-success' : 'status-danger'}">${isInc ? 'درآمد' : 'هزینه'}</span></td>
+                    <td style="font-size:12px">${tx.user}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    updateCharts();
+}
+
+function setupCharts() {
+    // 1. Line Chart (Income vs Expense)
+    const ctx1 = document.getElementById('mainChart').getContext('2d');
+    
+    // Gradient for Income
+    const gradientInc = ctx1.createLinearGradient(0, 0, 0, 400);
+    gradientInc.addColorStop(0, 'rgba(0, 230, 118, 0.5)');
+    gradientInc.addColorStop(1, 'rgba(0, 230, 118, 0)');
+
+    // Gradient for Expense
+    const gradientExp = ctx1.createLinearGradient(0, 0, 0, 400);
+    gradientExp.addColorStop(0, 'rgba(255, 23, 68, 0.5)');
+    gradientExp.addColorStop(1, 'rgba(255, 23, 68, 0)');
+
+    incomeChartInstance = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'],
+            datasets: [
+                {
+                    label: 'درآمد',
+                    data: [0, 0, 0, 0, 0, 0, 0],
+                    borderColor: '#00E676',
+                    backgroundColor: gradientInc,
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2
+                },
+                {
+                    label: 'هزینه',
+                    data: [0, 0, 0, 0, 0, 0, 0],
+                    borderColor: '#FF1744',
+                    backgroundColor: gradientExp,
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#D4AF37', font: {family: 'Vazirmatn'} } }
+            },
+            scales: {
+                x: { ticks: { color: '#aaa', font: {family: 'Vazirmatn'} }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#aaa', font: {family: 'Vazirmatn'} }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            }
+        }
+    });
+
+    // 2. Doughnut Chart (Top Services)
+    const ctx2 = document.getElementById('servicesChart').getContext('2d');
+    serviceChartInstance = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['کوتاهی', 'رنگ', 'میکاپ', 'ناخن', 'سایر'],
+            datasets: [{
+                data: [1, 1, 1, 1, 1],
+                backgroundColor: [
+                    '#D4AF37', // Gold
+                    '#800020', // Burgundy
+                    '#00E676', // Green
+                    '#00B0FF', // Blue
+                    '#757575'  // Grey
+                ],
+                borderColor: '#1a0003',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { color: '#fff', font: {family: 'Vazirmatn'} } }
+            }
+        }
+    });
+}
+
+// --- تابع اصلاح شده بروزرسانی نمودارها با داده‌های واقعی ---
+function updateCharts() {
+    if (!incomeChartInstance || !serviceChartInstance) return;
+
+    // 1. آماده‌سازی داده‌ها برای نمودار خطی (7 روز گذشته)
+    const labels = [];
+    const dataIncome = [];
+    const dataExpense = [];
+    
+    // حلقه برای 7 روز (از 6 روز پیش تا امروز)
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        
+        // ساخت لیبل روز هفته (مثلاً: شنبه)
+        const dayName = d.toLocaleDateString('fa-IR', { weekday: 'long' });
+        labels.push(dayName);
+
+        // فرمت تاریخ برای مقایسه با دیتابیس
+        const dateStr = d.toLocaleDateString('fa-IR');
+
+        let dailyInc = 0;
+        let dailyExp = 0;
+
+        // جستجو در تراکنش‌ها برای یافتن مقادیر این روز خاص
+        db.transactions.forEach(t => {
+            const tDate = new Date(t.date).toLocaleDateString('fa-IR');
+            if (tDate === dateStr) {
+                if (t.type === 'income') dailyInc += t.amount;
+                else dailyExp += t.amount;
+            }
+        });
+
+        dataIncome.push(dailyInc);
+        dataExpense.push(dailyExp);
+    }
+
+    // اعمال داده‌ها به نمودار خطی
+    incomeChartInstance.data.labels = labels;
+    incomeChartInstance.data.datasets[0].data = dataIncome;
+    incomeChartInstance.data.datasets[1].data = dataExpense;
+    incomeChartInstance.update();
+
+    // 2. آماده‌سازی داده‌ها برای نمودار دایره‌ای (خدمات پرطرفدار)
+    const catTotals = {};
+    
+    // جمع‌بندی درآمدها بر اساس دسته‌بندی
+    db.transactions.filter(t => t.type === 'income').forEach(t => {
+        const cat = t.category || 'سایر';
+        if (!catTotals[cat]) catTotals[cat] = 0;
+        catTotals[cat] += t.amount;
+    });
+
+    // مرتب‌سازی و انتخاب 5 تای اول
+    const sortedCats = Object.entries(catTotals)
+        .sort((a, b) => b[1] - a[1]) // مرتب‌سازی نزولی (بیشترین به کمترین)
+        .slice(0, 5); // فقط 5 تای اول
+
+    const srvLabels = sortedCats.map(x => x[0]); // نام دسته‌ها
+    const srvData = sortedCats.map(x => x[1]);   // مبالغ
+
+    // اعمال داده‌ها به نمودار دایره‌ای
+    if (sortedCats.length > 0) {
+        serviceChartInstance.data.labels = srvLabels;
+        serviceChartInstance.data.datasets[0].data = srvData;
+    } else {
+        // حالت پیش‌فرض اگر تراکنشی نباشد
+        serviceChartInstance.data.labels = ['بدون داده'];
+        serviceChartInstance.data.datasets[0].data = [1];
+    }
+    serviceChartInstance.update();
+}
+function populateRelatedUsers() {
+    const select = document.getElementById('txRelatedUser');
+    select.innerHTML = '<option value="">-- انتخاب (اختیاری) --</option>';
+    
+    // Add Staff
+    const grp1 = document.createElement('optgroup');
+    grp1.label = "پرسنل";
+    db.staff.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = `staff:${s.name}`;
+        opt.innerText = s.name;
+        grp1.appendChild(opt);
+    });
+    select.appendChild(grp1);
+
+    // Add Customers
+    const grp2 = document.createElement('optgroup');
+    grp2.label = "مشتریان";
+    db.customers.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = `cust:${c.name}`;
+        opt.innerText = c.name;
+        grp2.appendChild(opt);
+    });
+    select.appendChild(grp2);
+}
+function submitTransaction() {
+    const type = document.getElementById('txType').value;
+    let amount = parseFloat(document.getElementById('txAmount').value);
+    const category = document.getElementById('txCategory').value;
+    const desc = document.getElementById('txDesc').value;
+    const rel = document.getElementById('txRelatedUser').value;
+    
+    // بخش جدید: محاسبه مالیات
+    const applyTax = document.getElementById('txTaxApply').checked;
+    let taxAmount = 0;
+
+    if (!amount || amount <= 0) {
+        showToast('لطفاً مبلغ معتبر وارد کنید', 'error');
+        return;
+    }
+
+    // اگر تیک مالیات زده شده باشد و تراکنش درآمد باشد
+    if (type === 'income' && applyTax) {
+        const rate = db.settings.taxRate || 0;
+        if (rate > 0) {
+            taxAmount = amount * (rate / 100);
+            amount += taxAmount; // اضافه کردن مالیات به مبلغ کل
+        }
+    }
+
+    const newTx = {
+        id: generateId(),
+        date: Date.now(),
+        type: type,
+        amount: amount,
+        tax: taxAmount, // ذخیره مبلغ مالیات جداگانه
+        category: category,
+        desc: desc || category,
+        relatedTo: rel,
+        user: currentUser.name || 'مدیریت'
+    };
+
+    if (!db.transactions) db.transactions = [];
+    db.transactions.push(newTx);
+    
+    saveData();
+    closeModal('modalNewTx');
+    
+    // پاک کردن تیک مالیات برای دفعه بعد
+    document.getElementById('txTaxApply').checked = false;
+    document.getElementById('taxCalcResult').innerText = '';
+
+    showToast('تراکنش با موفقیت ثبت شد', 'success');
+    
+    if (document.getElementById('dashboard').classList.contains('active')) renderDashboard();
+    if (document.getElementById('accounting').classList.contains('active')) renderAccounting();
+}
+function renderAccounting() {
+    const tbody = document.getElementById('accountingBody');
+    
+    // دریافت مقادیر فیلترها از ورودی‌های بالای جدول
+    const filterType = document.getElementById('accFilterType') ? document.getElementById('accFilterType').value : 'all';
+    const dateInput = document.getElementById('accDateFilter').value;
+    const searchTerm = document.getElementById('accSearch').value.toLowerCase(); // متن جستجو
+    
+    // مرتب‌سازی لیست بر اساس تاریخ (از جدید به قدیم)
+    let list = db.transactions.sort((a,b) => b.date - a.date);
+
+    // --- 1. اعمال فیلتر تاریخ ---
+    if (dateInput) {
+        // تبدیل تاریخ تراکنش به فرمت YYYY-MM-DD برای مقایسه
+        list = list.filter(tx => {
+            const d = new Date(tx.date);
+            const txDateStr = d.getFullYear() + '-' + 
+                             String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+                             String(d.getDate()).padStart(2, '0');
+            return txDateStr === dateInput;
+        });
+    }
+
+    // --- 2. اعمال فیلتر جستجو (کد درخواستی شما) ---
+    if (searchTerm) {
+        list = list.filter(t => 
+            (t.desc && t.desc.toLowerCase().includes(searchTerm)) || 
+            (t.category && t.category.toLowerCase().includes(searchTerm)) ||
+            (t.amount && t.amount.toString().includes(searchTerm))
+        );
+    }
+
+    // --- 3. اعمال فیلتر نوع (درآمد / هزینه) ---
+    if (filterType !== 'all') {
+        list = list.filter(t => t.type === filterType);
+    }
+
+    // --- محاسبات مالی (جمع کل) ---
+    let totalInc = 0;
+    let totalExp = 0;
+    db.transactions.forEach(t => { // توجه: اینجا باید روی کل تراکنش‌ها جمع زد نه فقط فیلتر شده‌ها (معمولاً)، اما در نمایش فیلتر شده نمایش میدهیم
+        if(t.type === 'income') totalInc += t.amount;
+        else totalExp += t.amount;
+    });
+
+    // نمایش جمع کل در کارت‌های بالای صفحه
+    document.getElementById('accTotalIncome').innerText = formatMoney(totalInc);
+    document.getElementById('accTotalExpense').innerText = formatMoney(totalExp);
+    document.getElementById('accBalance').innerText = formatMoney(totalInc - totalExp);
+
+    // --- نمایش جدول ---
+    if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">تراکنشی یافت نشد</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = list.map((tx, index) => {
+        const isInc = tx.type === 'income';
+        const dateObj = new Date(tx.date);
+        const dateStr = dateObj.toLocaleDateString('fa-IR');
+        const timeStr = dateObj.toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
+        
+        return `
+            <tr>
+                <td>${index + 1}</td>
+                <td>
+                    <div style="font-weight:bold">${dateStr}</div>
+                    <div style="font-size:11px; color:var(--text-muted)">${timeStr}</div>
+                </td>
+                <td><span class="status-badge ${isInc ? 'status-success' : 'status-danger'}">${isInc ? 'درآمد' : 'هزینه'}</span></td>
+                <td>${tx.category}</td>
+                <td>${tx.desc}</td>
+                <td style="font-weight:bold; color:${isInc ? 'var(--success)' : 'var(--danger)'}; direction:ltr">
+                    ${isInc ? '+' : '-'}${formatMoney(tx.amount)}
+                </td>
+                <td>${tx.user}</td>
+                <td>
+                    <button class="icon-btn" style="width:30px; height:30px; border-color:var(--danger); color:var(--danger)" onclick="deleteTx('${tx.id}')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+</script>
+<script>
+/* --- Services Logic --- */
+function renderServices(search = '') {
+    const grid = document.getElementById('servicesGrid');
+    const term = search.toLowerCase();
+    
+    // فیلتر کردن خدمات
+    const filtered = db.services.filter(s => s.name.toLowerCase().includes(term));
+    
+    if (filtered.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted)">خدمتی یافت نشد</div>';
+        return;
+    }
+
+    grid.innerHTML = filtered.map(s => `
+        <div class="service-card">
+            <i class="${s.icon || 'fa-solid fa-scissors'} service-icon"></i>
+            <div class="service-name">${s.name}</div>
+            <div class="service-price">${formatMoney(s.price)}</div>
+            <div style="font-size:11px; color:#aaa; margin-top:5px;">${s.duration} دقیقه</div>
+            
+            <button class="icon-btn" style="position:absolute; top:5px; left:5px; width:25px; height:25px; border:none;" onclick="deleteService(${s.id})">
+                <i class="fa-solid fa-times" style="font-size:12px; color:var(--danger)"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+function saveService() {
+    const name = document.getElementById('srvName').value;
+    const cat = document.getElementById('srvCat').value;
+    const dur = document.getElementById('srvDuration').value;
+    const price = document.getElementById('srvPrice').value;
+    const icon = document.getElementById('srvIcon').value;
+
+    if (!name || !price) {
+        showToast('نام و قیمت خدمت الزامی است', 'error');
+        return;
+    }
+
+    const newSrv = {
+        id: Date.now(),
+        name: name,
+        category: cat,
+        duration: dur || 30,
+        price: parseInt(price),
+        icon: icon || 'fa-solid fa-star'
+    };
+
+    db.services.push(newSrv);
+    saveData();
+    closeModal('modalService');
+    renderServices();
+    showToast('خدمت جدید اضافه شد', 'success');
+}
+
+function deleteService(id) {
+    if(confirm('آیا این خدمت حذف شود؟')) {
+        db.services = db.services.filter(s => s.id !== id);
+        saveData();
+        renderServices();
+    }
+}
+
+/* --- Customer CRM Logic --- */
+function renderCustomers(search = '') {
+    const tbody = document.getElementById('customersBody');
+    const term = search.toLowerCase();
+    
+    // Calculate Stats
+    document.getElementById('crmTotalCust').innerText = db.customers.length;
+
+    const filtered = db.customers.filter(c => 
+        c.name.toLowerCase().includes(term) || 
+        (c.phone && c.phone.includes(term))
+    );
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">مشتری یافت نشد</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(c => {
+        // Calculate visits from transactions
+        const visits = db.transactions.filter(t => t.relatedTo === `cust:${c.name}`).length;
+        // Mock Loyalty Score
+        const score = visits * 10; 
+        
+        return `
+            <tr>
+                <td>
+                    <div class="user-cell">
+                        <div class="user-avatar" style="width:30px; height:30px; font-size:12px;">${c.name.charAt(0)}</div>
+                        <b>${c.name}</b>
+                    </div>
+                </td>
+                <td style="font-family:'Courier New', monospace; font-weight:bold;">${c.phone || '-'}</td>
+                <td>-</td>
+                <td style="text-align:center">${visits}</td>
+                <td><span class="status-badge status-warning"><i class="fa-solid fa-star"></i> ${score}</span></td>
+                <td>
+                    <button class="icon-btn" style="width:30px; height:30px;" onclick="viewCustomer('${c.name}')"><i class="fa-solid fa-eye"></i></button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function saveCustomer() {
+    const name = document.getElementById('custName').value;
+    const phone = document.getElementById('custPhone').value;
+    const notes = document.getElementById('custNotes').value;
+
+    if (!name) return showToast('نام مشتری الزامی است', 'error');
+
+    db.customers.push({
+        id: generateId(),
+        name: name,
+        phone: phone,
+        notes: notes,
+        joinDate: Date.now()
+    });
+
+    saveData();
+    closeModal('modalCustomer');
+    renderCustomers();
+    showToast('مشتری ثبت شد', 'success');
+}
+// --- تابع: ثبت نوبت رزرو جدید (فراخوانی از دکمه مدال) ---
+function submitAppointment() {
+    // خواندن مقادیر از فرم نوبت‌دهی (حتماً چک کنید که ID المنت‌ها در HTML شما درست باشد)
+    const customer = document.getElementById('aptCustomer').value;
+    const date = document.getElementById('aptDateInput').value;
+    const startTime = document.getElementById('aptTimeInput').value;
+    const barber = document.getElementById('aptBarberSelect').value;
+    const service = document.getElementById('aptService').value;
+    const note = document.getElementById('aptNoteInput').value;
+
+    if (!customer || !date || !startTime || !barber || !service) {
+        return showToast('لطفاً تمام فیلدهای اصلی نوبت را پر کنید.', 'error');
+    }
+    
+    // ۱. محاسبه مدت و زمان پایان
+    const duration = getServiceDuration(service);
+    const endTime = calculateEndTime(startTime, duration);
+
+    // ۲. ساخت شیء نوبت جدید
+    const newAppointment = {
+        id: generateId(),
+        customer: customer,
+        barber: barber,
+        service: service,
+        date: date,
+        startTime: startTime,
+        endTime: endTime, // فیلد حیاتی جدید
+        duration: duration, 
+        status: 'رزرو', 
+        note: note,
+        created_at: Date.now()
+    };
+    
+    // ۳. ذخیره نوبت در دیتابیس
+    db.appointments.push(newAppointment);
+    saveData();
+    
+    // ۴. به‌روزرسانی نمایش و بستن مدال
+    loadTodayAppointments(); // فراخوانی تابع نمایش نوبت‌ها (که در گام بعدی می‌سازیم)
+    closeModal('modalAppointment');
+    showToast('نوبت با موفقیت ثبت شد.', 'success');
+}
+// --- تابع: بارگذاری و نمایش نوبت‌های امروز ---
+// --- تابع اصلاح شده: بارگذاری و نمایش نوبت‌های امروز ---
+function loadTodayAppointments() {
+    const todayDate = getTodayJalaliDate(); 
+    
+    // مرتب‌سازی نوبت‌ها بر اساس ساعت
+    const todayAppointments = db.appointments
+                                .filter(app => app.date === todayDate)
+                                .sort((a, b) => (a.startTime > b.startTime) ? 1 : -1);
+
+    // ✅ اینجا اصلاح شد: نام درست ID در HTML
+    const listContainer = document.getElementById('appointmentGrid'); 
+    
+    if (!listContainer) return;
+    
+    listContainer.innerHTML = ''; // پاک کردن محتوای قبلی
+    
+    if (todayAppointments.length === 0) {
+        listContainer.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px; border: 2px dashed var(--gold-dark); border-radius: 15px;">
+                <i class="fa-solid fa-calendar-xmark" style="font-size: 40px; margin-bottom: 15px; display: block;"></i>
+                نوبتی برای امروز (${todayDate}) ثبت نشده است.
+            </div>`;
+        return;
+    }
+
+    // ساخت HTML نوبت‌ها
+    listContainer.innerHTML = todayAppointments.map(app => {
+        // تعیین رنگ بر اساس وضعیت
+        let statusColor = 'var(--warning)';
+        let statusIcon = 'fa-clock';
+        let statusClass = 'status-warning';
+
+        if (app.status === 'confirmed' || app.status === 'تایید شده') {
+             statusColor = 'var(--info)'; statusIcon = 'fa-thumbs-up'; statusClass = 'status-info';
+        } else if (app.status === 'completed' || app.status === 'انجام شد') {
+             statusColor = 'var(--success)'; statusIcon = 'fa-check-circle'; statusClass = 'status-success';
+        } else if (app.status === 'canceled' || app.status === 'لغو شد') {
+             statusColor = 'var(--danger)'; statusIcon = 'fa-ban'; statusClass = 'status-danger';
+        }
+        
+        return `
+            <div class="card" style="border-right: 4px solid ${statusColor}; padding: 20px; min-height: 180px; display: flex; flex-direction: column; justify-content: space-between;">
+                
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <span class="status-badge" style="background:${statusColor}20; color:${statusColor}; border:1px solid ${statusColor}">
+                            <i class="fa-solid ${statusIcon}"></i> ${app.status}
+                        </span>
+                        <div style="text-align: left;">
+                            <div style="font-size: 18px; font-weight: 900; color: var(--gold-light); font-family: sans-serif;">${app.startTime}</div>
+                            <div style="font-size: 12px; color: var(--text-muted);">تا ${app.endTime}</div>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 16px; margin-bottom: 5px; color: #fff;">
+                        <i class="fa-solid fa-user" style="color: var(--gold-primary); margin-left: 5px;"></i> ${app.customer}
+                    </h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">
+                        ${app.service} <span style="color:var(--gold-dark)">|</span> ${app.barber}
+                    </p>
+                </div>
+
+                <div style="border-top: 1px solid rgba(255,255,255,0.1); paddingTop: 10px; display: flex; justify-content: flex-end; gap: 5px;">
+                    <button class="icon-btn" title="تکمیل نوبت" onclick="alert('تغییر وضعیت به انجام شد...')">
+                        <i class="fa-solid fa-check" style="color: var(--success);"></i>
+                    </button>
+                    <button class="icon-btn" title="ویرایش" onclick="alert('ویرایش نوبت')">
+                        <i class="fa-solid fa-pen"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+function renderPersonnel() {
+    const tbody = document.getElementById('personnelBody');
+    const payrollSel = document.getElementById('payrollStaffSel');
+    const monthSel = document.getElementById('payrollMonth');
+
+    // اصلاح: پر کردن خودکار لیست ماه‌ها اگر خالی باشد
+    if (monthSel && monthSel.options.length === 0) {
+        const months = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+        months.forEach((m, i) => {
+            const opt = document.createElement('option');
+            opt.value = i + 1;
+            opt.innerText = m;
+            monthSel.appendChild(opt);
+        });
+    }
+
+    // پر کردن لیست انتخاب پرسنل
+    payrollSel.innerHTML = '<option value="">انتخاب پرسنل...</option>';
+    db.staff.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.id;
+        opt.innerText = s.name;
+        payrollSel.appendChild(opt);
+    });
+
+    tbody.innerHTML = db.staff.map(s => `
+        <tr>
+            <td style="font-weight:bold">${s.name}</td>
+            <td><span class="status-badge status-neutral">${s.role}</span></td>
+            <td>${formatMoney(s.baseSalary)}</td>
+            <td>${s.comm}%</td>
+            <td><span class="status-badge status-success">فعال</span></td>
+            <td>---</td>
+            <td>
+                <button class="icon-btn" style="width:30px; height:30px; color:var(--danger); border-color:var(--danger)" onclick="deleteStaff(${s.id})">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// --- تابع اصلاح شده محاسبه حقوق (فیلتر بر اساس ماه و سال) ---
+function calculateSalary() {
+    const staffId = document.getElementById('payrollStaffSel').value;
+    const monthIndex = parseInt(document.getElementById('payrollMonth').value);
+    const yearVal = parseInt(document.getElementById('payrollYear').value);
+
+    if (!staffId) return showToast('لطفاً پرسنل را انتخاب کنید', 'error');
+    if (!monthIndex) return showToast('لطفاً ماه را انتخاب کنید', 'error');
+
+    const staff = db.staff.find(s => s.id == staffId);
+    if (!staff) return;
+
+    // فیلتر کردن تراکنش‌ها بر اساس پرسنل + سال + ماه
+    const staffTx = db.transactions.filter(t => {
+        if (t.type !== 'income' || t.relatedTo !== `staff:${staff.name}`) return false;
+        
+        // تبدیل تاریخ تراکنش به شمسی برای مقایسه
+        // استفاده از u-nu-latn برای اطمینان از اعداد انگلیسی
+        const dStr = new Date(t.date).toLocaleDateString('fa-IR-u-nu-latn'); 
+        const parts = dStr.split('/'); // خروجی مثل: 1403/1/10
+        const tYear = parseInt(parts[0]);
+        const tMonth = parseInt(parts[1]);
+
+        return tYear === yearVal && tMonth === monthIndex;
+    });
+
+    const totalServiceIncome = staffTx.reduce((sum, t) => sum + t.amount, 0);
+    const commAmount = (totalServiceIncome * staff.comm) / 100;
+    const totalSalary = staff.baseSalary + commAmount;
+
+    // نمایش نتیجه
+    const resultDiv = document.getElementById('payrollResult');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `
+        <h4 style="color:var(--gold-primary); margin-bottom:15px; text-align:center;">فیش حقوقی: ${staff.name}</h4>
+        <div style="text-align:center; font-size:12px; color:#aaa; margin-bottom:15px;">
+            دوره: ${document.getElementById('payrollMonth').options[monthIndex-1].text} ${yearVal}
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">
+            <span>حقوق پایه:</span>
+            <span>${formatMoney(staff.baseSalary)} تومان</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">
+            <span>درآمد ایجاد شده (این ماه):</span>
+            <span>${formatMoney(totalServiceIncome)} تومان</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:5px;">
+            <span>کمیسیون (${staff.comm}%):</span>
+            <span>${formatMoney(commAmount)} تومان</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:15px; font-size:18px; color:var(--success); font-weight:bold;">
+            <span>مبلغ قابل پرداخت:</span>
+            <span>${formatMoney(totalSalary)} تومان</span>
+        </div>
+        <button class="gold-btn" style="width:100%; margin-top:20px;" onclick="submitTransactionFromPayroll(${totalSalary}, '${staff.name}')">
+            <i class="fa-solid fa-check"></i> پرداخت و ثبت در هزینه‌ها
+        </button>
+    `;
+}
+function saveStaff() {
+    const name = document.getElementById('stfName').value;
+    const role = document.getElementById('stfRole').value;
+    const salary = document.getElementById('stfBaseSalary').value;
+    const comm = document.getElementById('stfComm').value;
+
+    if(!name) return showToast('نام پرسنل الزامی است', 'error');
+
+    db.staff.push({
+        id: Date.now(),
+        name: name,
+        role: role,
+        baseSalary: parseFloat(salary) || 0,
+        comm: parseFloat(comm) || 0
+    });
+
+    saveData();
+    closeModal('modalStaff');
+    renderPersonnel();
+    showToast('پرسنل جدید استخدام شد', 'success');
+}
+
+function deleteStaff(id) {
+    if(confirm('حذف پرسنل؟')) {
+        db.staff = db.staff.filter(s => s.id !== id);
+        saveData();
+        renderPersonnel();
+    }
+}
+</script>
+<script>
+/* --- Inventory Logic --- */
+// --- تابع اصلاح شده نمایش انبار (با دکمه فروش) ---
+function renderInventory() {
+    const tbody = document.getElementById('inventoryBody');
+    
+    if (db.inventory.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">انباری خالی است</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = db.inventory.map(p => {
+        let status = '<span class="status-badge status-success">موجود</span>';
+        if (p.stock <= 5) status = '<span class="status-badge status-warning">کم</span>';
+        if (p.stock === 0) status = '<span class="status-badge status-danger">ناموجود</span>';
+
+        return `
+            <tr>
+                <td style="font-weight:bold">${p.name}</td>
+                <td>${p.brand || '-'}</td>
+                <td style="font-weight:bold; color:var(--text-main);">${p.stock}</td>
+                <td>${formatMoney(p.buyPrice)}</td>
+                <td style="color:var(--gold-light)">${formatMoney(p.sellPrice)}</td>
+                <td>${status}</td>
+                <td>
+                    <button class="icon-btn" style="width:30px; height:30px; margin-left:5px; color:var(--success); border-color:var(--success)" onclick="sellProduct(${p.id})" title="فروش سریع">
+                        <i class="fa-solid fa-cart-plus"></i>
+                    </button>
+                    <button class="icon-btn" style="width:30px; height:30px; color:var(--danger); border-color:var(--danger)" onclick="deleteProduct(${p.id})">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+// --- تابع جدید برای ثبت فروش و کسر از انبار ---
+function sellProduct(id) {
+    const product = db.inventory.find(p => p.id === id);
+    if (!product) return;
+
+    if (product.stock <= 0) {
+        return showToast('این کالا موجودی ندارد!', 'error');
+    }
+
+    // دریافت تعداد فروش از کاربر
+    const countStr = prompt(`چه تعداد "${product.name}" می‌فروشید؟\n(موجودی فعلی: ${product.stock})`, "1");
+    if (!countStr) return; // اگر کاربر انصراف زد
+
+    const count = parseInt(countStr);
+
+    if (isNaN(count) || count <= 0) {
+        return showToast('تعداد وارد شده نامعتبر است', 'error');
+    }
+
+    if (count > product.stock) {
+        return showToast('موجودی انبار کافی نیست!', 'error');
+    }
+
+    // 1. کسر از انبار
+    product.stock -= count;
+
+    // 2. محاسبه مبلغ کل
+    const totalPrice = product.sellPrice * count;
+
+    // 3. ثبت خودکار در حسابداری (به عنوان درآمد)
+    db.transactions.push({
+        id: generateId(),
+        date: Date.now(),
+        type: 'income',
+        category: 'فروش محصول', // دسته‌بندی
+        desc: `فروش ${count} عدد ${product.name} (${product.brand || ''})`,
+        amount: totalPrice,
+        relatedTo: 'inventory',
+        user: currentUser.name
+    });
+
+    saveData();
+    renderInventory(); // بروزرسانی جدول انبار
+    showToast(`فروش ${count} عدد کالا با موفقیت ثبت شد`, 'success');
+}
+function saveProduct() {
+    const name = document.getElementById('prdName').value;
+    const brand = document.getElementById('prdBrand').value;
+    const stock = parseInt(document.getElementById('prdStock').value);
+    const buy = parseInt(document.getElementById('prdBuyPrice').value);
+    const sell = parseInt(document.getElementById('prdSellPrice').value);
+
+    if (!name || !sell) return showToast('نام و قیمت فروش الزامی است', 'error');
+
+    db.inventory.push({
+        id: Date.now(),
+        name: name,
+        brand: brand,
+        stock: stock || 0,
+        buyPrice: buy || 0,
+        sellPrice: sell || 0
+    });
+
+    saveData();
+    closeModal('modalProduct');
+    renderInventory();
+    showToast('کالا به انبار اضافه شد', 'success');
+}
+
+function deleteProduct(id) {
+    if(confirm('حذف کالا از انبار؟')) {
+        db.inventory = db.inventory.filter(p => p.id !== id);
+        saveData();
+        renderInventory();
+    }
+}
+
+/* --- Payroll Calculation Logic --- */
+
+// --- تابع اصلاح شده ثبت تراکنش (با محاسبه مالیات) ---
+function submitTransaction() {
+    const type = document.getElementById('txType').value;
+    let amount = parseFloat(document.getElementById('txAmount').value);
+    const category = document.getElementById('txCategory').value;
+    const desc = document.getElementById('txDesc').value;
+    const rel = document.getElementById('txRelatedUser').value;
+    
+    // خط جدید: بررسی وضعیت تیک مالیات
+    const applyTax = document.getElementById('txTaxApply') ? document.getElementById('txTaxApply').checked : false;
+    let taxAmount = 0;
+
+    if (!amount || amount <= 0) {
+        showToast('لطفاً مبلغ معتبر وارد کنید', 'error');
+        return;
+    }
+
+    // اگر درآمد بود و تیک مالیات زده شده بود
+    if (type === 'income' && applyTax) {
+        const rate = db.settings.taxRate || 0; // خواندن نرخ از تنظیمات
+        if (rate > 0) {
+            taxAmount = amount * (rate / 100); // محاسبه مبلغ مالیات
+            amount += taxAmount; // اضافه کردن به مبلغ کل
+        }
+    }
+
+    const newTx = {
+        id: generateId(),
+        date: Date.now(),
+        type: type,
+        amount: amount,
+        tax: taxAmount, // ذخیره اینکه چقدرش مالیات بوده
+        category: category,
+        desc: desc || category,
+        relatedTo: rel,
+        user: currentUser.name || 'مدیریت'
+    };
+
+    if (!db.transactions) db.transactions = [];
+    db.transactions.push(newTx);
+    
+    saveData();
+    closeModal('modalNewTx');
+    
+    // خاموش کردن تیک برای دفعه بعد
+    if(document.getElementById('txTaxApply')) document.getElementById('txTaxApply').checked = false;
+
+    showToast('تراکنش با موفقیت ثبت شد', 'success');
+    
+    // رفرش کردن صفحه جاری
+    if (document.getElementById('dashboard').classList.contains('active')) renderDashboard();
+    if (document.getElementById('accounting').classList.contains('active')) renderAccounting();
+}
+
+/* --- Reports Generation Logic --- */
+function generateReport(type) {
+    const area = document.getElementById('reportResultArea');
+    const titleEl = document.getElementById('reportTitle');
+    const contentEl = document.getElementById('reportContent');
+    
+    area.style.display = 'block';
+    area.scrollIntoView({ behavior: 'smooth' });
+
+    let title = '';
+    let html = '';
+
+    if (type === 'daily') {
+        title = 'گزارش عملکرد امروز';
+        const today = new Date().toLocaleDateString('fa-IR');
+        const txs = db.transactions.filter(t => new Date(t.date).toLocaleDateString('fa-IR') === today);
+        
+        const inc = txs.filter(t => t.type === 'income').reduce((a,b) => a+b.amount, 0);
+        const exp = txs.filter(t => t.type === 'expense').reduce((a,b) => a+b.amount, 0);
+
+        html = `
+            <div class="grid-2">
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-label">درآمد امروز</div>
+                        <div class="stat-value" style="color:var(--success)">${formatMoney(inc)}</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <div class="stat-label">هزینه امروز</div>
+                        <div class="stat-value" style="color:var(--danger)">${formatMoney(exp)}</div>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-top:20px; font-size:16px; text-align:center;">
+                سود خالص امروز: <b style="color:${inc-exp>=0 ? 'var(--gold-primary)' : 'var(--danger)'}">${formatMoney(inc - exp)} تومان</b>
+            </div>
+        `;
+
+    } else if (type === 'monthly') {
+        title = 'گزارش ماه جاری';
+        
+        // محاسبه تاریخ اول ماه جاری (برای مقایسه دقیق‌تر)
+        // روش ساده: استفاده از رشته تاریخ شمسی
+        const thisMonthStr = new Date().toLocaleDateString('fa-IR', {year:'numeric', month:'numeric'}); // مثلا "1403/10"
+        
+        // فیلتر کردن تراکنش‌های همین ماه
+        const monthlyTxs = db.transactions.filter(t => {
+            const tDate = new Date(t.date).toLocaleDateString('fa-IR', {year:'numeric', month:'numeric'});
+            return tDate === thisMonthStr;
+        });
+
+        const inc = monthlyTxs.filter(t => t.type === 'income').reduce((a,b) => a+b.amount, 0);
+        const exp = monthlyTxs.filter(t => t.type === 'expense').reduce((a,b) => a+b.amount, 0);
+        
+        html = `
+            <div style="padding:20px; text-align:center;">
+                <h3>عملکرد ${new Date().toLocaleDateString('fa-IR', {month:'long', year:'numeric'})}</h3>
+                <div class="grid-2" style="margin-top:20px;">
+                    <div style="color:var(--success)">
+                        <div>درآمد ماه</div>
+                        <div style="font-size:20px; font-weight:bold">${formatMoney(inc)}</div>
+                    </div>
+                    <div style="color:var(--danger)">
+                        <div>هزینه ماه</div>
+                        <div style="font-size:20px; font-weight:bold">${formatMoney(exp)}</div>
+                    </div>
+                </div>
+                <hr style="border-color:rgba(212,175,55,0.3); margin:20px 0;">
+                <h2 style="color:${inc - exp >= 0 ? 'var(--gold-primary)' : 'var(--danger)'}">
+                    سود خالص: ${formatMoney(inc - exp)} تومان
+                </h2>
+            </div>
+        `;
+    } else if (type === 'staff') {
+        title = 'گزارش عملکرد پرسنل';
+        // Group income by staff
+        let staffStats = {};
+        db.staff.forEach(s => staffStats[s.name] = 0);
+        
+        db.transactions.filter(t => t.type === 'income' && t.relatedTo && t.relatedTo.startsWith('staff:'))
+            .forEach(t => {
+                const name = t.relatedTo.split(':')[1];
+                if (staffStats[name] !== undefined) staffStats[name] += t.amount;
+            });
+
+        html = '<table class="lux-table"><thead><tr><th>نام پرسنل</th><th>درآمد ایجاد شده</th></tr></thead><tbody>';
+        for (let [name, total] of Object.entries(staffStats)) {
+            html += `<tr><td>${name}</td><td>${formatMoney(total)} تومان</td></tr>`;
+        }
+        html += '</tbody></table>';
+    }
+
+    titleEl.innerText = title;
+    contentEl.innerHTML = html;
+}
+</script>
+<script>
+/* --- Settings & System Logic --- */
+// --- تابع اصلاح شده ذخیره تنظیمات (با مالیات) ---
+function saveSettings() {
+    const name = document.getElementById('setSalonName').value;
+    const addr = document.getElementById('setAddress').value;
+    const phone = document.getElementById('setPhone').value;
+    
+    // خط جدید: خواندن درصد مالیات
+    const tax = document.getElementById('setTaxRate').value;
+
+    db.settings.name = name;
+    db.settings.address = addr;
+    db.settings.phone = phone;
+    
+    // خط جدید: ذخیره درصد مالیات در حافظه
+    db.settings.taxRate = parseFloat(tax) || 0; 
+
+    saveData();
+    showToast('تنظیمات و نرخ مالیات ذخیره شد', 'success');
+    
+    // بروزرسانی نام در منوی راست
+    const sidebarName = document.getElementById('sidebarUserName');
+    if(sidebarName) sidebarName.innerText = name || 'مدیریت';
+}
+
+function exportBackup() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "RoyalSalon_Backup_" + new Date().toISOString().slice(0,10) + ".json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+function importBackup(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const importedDB = JSON.parse(e.target.result);
+            if (importedDB.transactions && importedDB.customers) {
+                db = importedDB;
+                saveData();
+                alert('اطلاعات با موفقیت بازیابی شد. سیستم مجدداً بارگذاری می‌شود.');
+                location.reload();
+            } else {
+                showToast('فایل پشتیبان نامعتبر است', 'error');
+            }
+        } catch (err) {
+            showToast('خطا در خواندن فایل', 'error');
+        }
+    };
+    reader.readAsText(file);
+}
+
+function factoryReset() {
+    if (confirm('هشدار جدی: آیا مطمئن هستید؟ تمام اطلاعات (مشتریان، تراکنش‌ها، خدمات) برای همیشه پاک خواهد شد!')) {
+        if(confirm('این عملیات غیرقابل بازگشت است. آیا ادامه می‌دهید؟')) {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
+    }
+}
+
+/* --- Export & Print Helpers --- */
+function printReport() {
+    window.print();
+}
+
+function exportToExcel(tableId) {
+    const table = document.getElementById(tableId);
+    const wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
+    XLSX.writeFile(wb, 'RoyalSalon_Report.xlsx');
+}
+
+function filterAccounting() {
+    renderAccounting(); 
+}
+
+// Initial filtering setup
+document.addEventListener('DOMContentLoaded', () => {
+    // Optional: Pre-fill dates or check session
+});
+// --- تابع جدید نمایش اعلانات (رفع خرابی دکمه زنگوله) ---
+function showNotifications() {
+    // 1. جستجو برای کالاهای کم‌موجود (کمتر از 5 عدد)
+    const lowStockItems = db.inventory.filter(p => p.stock <= 5);
+    
+    if (lowStockItems.length > 0) {
+        // اگر کالای کم‌موجودی پیدا شد، اسمشان را لیست کن
+        let msg = "⚠️ هشدار موجودی انبار:\n\n";
+        lowStockItems.forEach(p => {
+            msg += `• کالای "${p.name}" (فقط ${p.stock} عدد مانده)\n`;
+        });
+        
+        alert(msg); // نمایش پیام هشدار به کاربر
+    } else {
+        // اگر همه چیز مرتب بود
+        showToast('هیچ اعلان یا هشدار جدیدی وجود ندارد', 'success');
+    }
+}
+// --- تابع حذف تراکنش (که فراموش شده بود) ---
+function deleteTx(id) {
+    if(confirm('آیا از حذف این تراکنش اطمینان دارید؟ این عملیات غیرقابل بازگشت است.')) {
+        // حذف از آرایه
+        db.transactions = db.transactions.filter(t => t.id !== id);
+        saveData(); // ذخیره تغییرات
+        renderAccounting(); // بروزرسانی جدول
+        updateCharts(); // بروزرسانی نمودارها چون مبالغ تغییر کرده
+        showToast('تراکنش با موفقیت حذف شد', 'error');
+    }
+}
+// --- تابع نمایش جزئیات مشتری (برای دکمه چشم) ---
+function viewCustomer(customerName) {
+    const cust = db.customers.find(c => c.name === customerName);
+    if (!cust) return;
+
+    // پیدا کردن خریدهای این مشتری
+    const txs = db.transactions.filter(t => t.relatedTo === `cust:${cust.name}`);
+    const totalSpent = txs.reduce((sum, t) => sum + t.amount, 0);
+    const lastVisit = txs.length > 0 ? new Date(txs[0].date).toLocaleDateString('fa-IR') : 'ندارد';
+
+    // نمایش اطلاعات در یک پیام
+    alert(`
+    👤 نام مشتری: ${cust.name}
+    📞 موبایل: ${cust.phone || '-'}
+    📅 تاریخ عضویت: ${new Date(cust.joinDate).toLocaleDateString('fa-IR')}
+    --------------------------------
+    💰 مجموع خرج کرد: ${formatMoney(totalSpent)} تومان
+    ✂️ تعداد دفعات مراجعه: ${txs.length} بار
+    ⏰ آخرین بازدید: ${lastVisit}
+    📝 یادداشت: ${cust.notes || '-'}
+    `);
+}
+// --- چک کردن وضعیت ورود هنگام رفرش صفحه ---
+document.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'flex';
+        initApp();
+    }
+});
+// --- تابع ذخیره رمز عبور جدید ---
+function saveNewPassword() {
+    const newUser = document.getElementById('newUsername').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirmPass = document.getElementById('confirmPassword').value;
+
+    if (!newUser || !newPass) {
+        return showToast('لطفاً نام کاربری و رمز عبور را وارد کنید', 'error');
+    }
+
+    if (newPass !== confirmPass) {
+        return showToast('تکرار رمز عبور مطابقت ندارد', 'error');
+    }
+
+    // ذخیره در تنظیمات دیتابیس
+    db.settings.auth = {
+        user: newUser,
+        pass: newPass
+    };
+    
+    saveData(); // ذخیره در LocalStorage
+    closeModal('modalChangePass');
+    showToast('رمز عبور با موفقیت تغییر کرد', 'success');
+}
+// 1. تابع اصلاح شده فرمت پول (برای پشتیبانی از ارز انتخابی)
+function formatMoney(amount) {
+    const currency = (db.settings && db.settings.currency) ? db.settings.currency : 'افغانی';
+    return new Intl.NumberFormat('fa-IR').format(amount) + ' ' + currency;
+}
+
+// 2. توابع ذخیره سازی تنظیمات جداگانه
+function saveGeneralSettings() {
+    db.settings.name = document.getElementById('setSalonName').value;
+    db.settings.address = document.getElementById('setAddress').value;
+    db.settings.phone = document.getElementById('setPhone').value;
+    saveData();
+    closeModal('modalSetGeneral');
+    showToast('مشخصات سالن ذخیره شد', 'success');
+    document.getElementById('sidebarUserName').innerText = db.settings.name || 'مدیریت';
+}
+
+function saveCurrencySettings() {
+    const curr = document.getElementById('setCurrencySelect').value;
+    if(!db.settings) db.settings = {};
+    db.settings.currency = curr;
+    saveData();
+    closeModal('modalSetCurrency');
+    
+    // رفرش صفحه برای اعمال تغییر واحد پول در تمام صفحات
+    location.reload(); 
+}
+
+function saveTaxRateOnly() {
+    const rate = parseFloat(document.getElementById('setTaxRateInput').value);
+    if(!db.settings) db.settings = {};
+    db.settings.taxRate = rate || 0;
+    saveData();
+    showToast('نرخ مالیات بروزرسانی شد', 'success');
+}
+
+// 3. منطق پیشرفته محاسبه مالیات (فصلی و سالانه)
+function calculateTaxReport(mode) {
+    const resultDiv = document.getElementById('taxReportResult');
+    const year = parseInt(document.getElementById('taxYearInput').value);
+    
+    let filteredTx = [];
+    let title = "";
+
+    if (mode === 'annual') {
+        title = `گزارش مالیاتی سال ${year}`;
+        // فیلتر بر اساس سال
+        filteredTx = db.transactions.filter(t => {
+            const dStr = new Date(t.date).toLocaleDateString('fa-IR-u-nu-latn'); 
+            return parseInt(dStr.split('/')[0]) === year && t.type === 'income';
+        });
+    } else if (mode === 'seasonal') {
+        const season = document.getElementById('taxSeasonSelect').value;
+        const seasonNames = ["بهار", "تابستان", "پاییز", "زمستان"];
+        title = `گزارش مالیاتی ${seasonNames[season-1]} ${year}`;
+        
+        // بازه ماه‌ها
+        let startMonth = (season - 1) * 3 + 1; // مثلا بهار: 1
+        let endMonth = startMonth + 2;         // مثلا بهار: 3
+
+        filteredTx = db.transactions.filter(t => {
+            if(t.type !== 'income') return false;
+            const dStr = new Date(t.date).toLocaleDateString('fa-IR-u-nu-latn');
+            const parts = dStr.split('/');
+            const tYear = parseInt(parts[0]);
+            const tMonth = parseInt(parts[1]);
+            return tYear === year && tMonth >= startMonth && tMonth <= endMonth;
+        });
+    }
+
+    // محاسبه مبالغ
+    let totalSales = 0;
+    let totalTax = 0;
+
+    filteredTx.forEach(t => {
+        totalSales += t.amount; // مبلغ کل تراکنش (شامل مالیات)
+        totalTax += (t.tax || 0); // مالیاتی که در تراکنش ذخیره شده
+    });
+
+    const netSales = totalSales - totalTax;
+
+    // نمایش نتیجه
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `
+        <h4 style="text-align:center; color:var(--gold-light); margin-bottom:15px;">${title}</h4>
+        <table class="lux-table">
+            <tr>
+                <td>کل فروش ناخالص</td>
+                <td style="direction:ltr">${formatMoney(totalSales)}</td>
+            </tr>
+            <tr>
+                <td>فروش خالص (بدون مالیات)</td>
+                <td style="direction:ltr">${formatMoney(netSales)}</td>
+            </tr>
+            <tr style="background:rgba(255,23,68,0.1); font-weight:bold;">
+                <td style="color:var(--danger)">مالیات قابل پرداخت</td>
+                <td style="direction:ltr; color:var(--danger)">${formatMoney(totalTax)}</td>
+            </tr>
+        </table>
+        <div style="text-align:center; margin-top:10px; font-size:11px; color:#aaa;">
+            تعداد تراکنش‌های بررسی شده: ${filteredTx.length}
+        </div>
+    `;
+}
+
+// 4. مقداردهی اولیه فیلدها هنگام باز کردن تنظیمات
+// (این کد را به انتهای تابع initApp یا جایی که دیتا لود میشود اضافه کنید)
+function loadSettingsToInputs() {
+    if(db.settings) {
+        if(document.getElementById('setSalonName')) document.getElementById('setSalonName').value = db.settings.name || '';
+        if(document.getElementById('setAddress')) document.getElementById('setAddress').value = db.settings.address || '';
+        if(document.getElementById('setPhone')) document.getElementById('setPhone').value = db.settings.phone || '';
+        if(document.getElementById('setCurrencySelect')) document.getElementById('setCurrencySelect').value = db.settings.currency || 'تومان';
+        if(document.getElementById('setTaxRateInput')) document.getElementById('setTaxRateInput').value = db.settings.taxRate || '';
+    }
+}
+// --- تابع پر کردن لیست دسته‌بندی‌ها ---
+function populateTxCategories(type) {
+    const select = document.getElementById('txCategory');
+    if (!select) return; // اطمینان از وجود المنت
+    
+    select.innerHTML = ''; // پاک کردن گزینه‌های قبلی
+    
+    let opts = [];
+    // اگر ورودی درآمد بود
+    if (type === 'income') {
+        opts = ['خدمات آرایشگاه', 'فروش محصول', 'پیش‌پرداخت', 'سایر درآمدها'];
+    } 
+    // اگر ورودی هزینه بود
+    else {
+        opts = ['خرید مواد مصرفی', 'حقوق پرسنل', 'اجاره و قبض', 'تبلیغات', 'تعمیرات', 'برداشت مدیریت', 'سایر هزینه‌ها'];
+    }
+
+    // ساخت گزینه‌ها
+    opts.forEach(o => {
+        const option = document.createElement('option');
+        option.value = o;
+        option.innerText = o;
+        select.appendChild(option);
+    });
+}
+
+function loadAppointments() {
+    const grid = document.getElementById('appointmentGrid');
+    if(!grid) return; // اگر صفحه نوبت‌دهی باز نباشد، کاری نکن
+
+    grid.innerHTML = ''; // پاکسازی لیست قبلی
+
+    // اگر نوبتی نداریم
+    if(!db.appointments || db.appointments.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:#888; border:2px dashed var(--gold-dark); border-radius:10px;">هنوز نوبتی ثبت نشده است. دکمه "نوبت جدید" را بزنید.</div>';
+        return;
+    }
+
+    // ساختن کارت‌ها برای هر نوبت
+    db.appointments.forEach(app => {
+        // ساخت کارت HTML
+        const card = `
+            <div class="card" style="border-right: 4px solid var(--warning); padding: 15px; margin-bottom:0;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <span style="font-weight:bold; color:var(--gold-light); font-size:16px;">${app.startTime}</span>
+                    <span class="status-badge status-warning">رزرو</span>
+                </div>
+                <h3 style="color:#fff; margin-bottom:5px; font-size:15px;">${app.customer}</h3>
+                <div style="color:#aaa; font-size:12px;">${app.service} | ${app.barber}</div>
+            </div>
+        `;
+        grid.innerHTML += card;
+    });
+}
+function saveAppointment() {
+    // 1. گرفتن اطلاعات از ورودی‌ها
+    const customer = document.getElementById('aptCustomer').value;
+    const service = document.getElementById('aptService').value;
+    const barber = document.getElementById('aptBarber').value; // نام فیلد در HTML جدید
+    const time = document.getElementById('aptTime').value;
+
+    // 2. چک کردن خالی نبودن
+    if(!customer || !service || !time) {
+        alert("لطفاً نام مشتری، خدمت و ساعت را وارد کنید.");
+        return;
+    }
+
+    // 3. ساختن نوبت جدید
+    const newAppt = {
+        id: Date.now(),
+        customer: customer,
+        service: service,
+        barber: barber || 'تعیین نشده',
+        startTime: time,
+        date: new Date().toLocaleDateString('fa-IR'), // تاریخ امروز
+        status: 'رزرو'
+    };
+
+    // 4. اضافه کردن به دیتابیس
+    if(!db.appointments) db.appointments = [];
+    db.appointments.push(newAppt);
+    saveData(); // ذخیره در حافظه
+
+    // 5. بستن پنجره و بروزرسانی لیست
+    closeModal('modalAppointment');
+    loadAppointments(); // <--- این خط لیست را رفرش می‌کند تا نوبت دیده شود
+    
+    // 6. خالی کردن فرم
+    document.getElementById('aptCustomer').value = '';
+    document.getElementById('aptService').value = '';
+}
+</script>
+</body>
+</html>
