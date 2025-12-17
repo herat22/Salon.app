@@ -11,7 +11,13 @@
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script> <style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js">
+</script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+ <style>
     /* ========================================= 
        1. CSS VARIABLES (THE ROYAL THEME - FROM INDEX9)
        ========================================= */
@@ -60,6 +66,7 @@
         --anim-fast: 0.2s ease;
         --anim-med: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         --anim-slow: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+@keyframes spin { 100% { transform: rotate(360deg); } }
     }
 
     /* =========================================
@@ -247,7 +254,6 @@
         color: var(--burgundy-deep);
         border-color: var(--gold-primary);
     }
-<style>
     #loginPage {
         position: fixed;
         top: 0;
@@ -438,8 +444,6 @@
         display: none;
         animation: shake 0.3s;
     }
-</style>
-<style>
     /* =========================================
        7. FORMS & INPUTS (LUXURY STYLE)
        ========================================= */
@@ -1119,32 +1123,47 @@
 <div id="loadingOverlay" style="position:fixed; top:0; left:0; width:100%; height:100%; background:#1a0003; z-index:10000; display:flex; align-items:center; justify-content:center; transition:opacity 0.5s;">
     <div class="spinner-dual" style="width:50px; height:50px; border:3px solid var(--gold-dark); border-top-color:var(--gold-light); border-radius:50%; animation:spin 1s infinite linear;"></div>
 </div>
-<style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+
 
 <div id="loginPage">
     <div class="login-card">
         <div class="brand-logo">
             <i class="fa-solid fa-scissors"></i>
         </div>
-        <h1 class="login-title">Royal Salon AF</h1>
-        <p class="login-subtitle">سیستم مدیریت آرایشگاه (افغانستان)</p>
+        <h1 class="login-title" data-i18n="appTitle">Royal Salon AF</h1>
+        <p class="login-subtitle" data-i18n="appSubtitle">سیستم مدیریت آرایشگاه</p>
         
         <form onsubmit="event.preventDefault(); handleLogin();">
             <div class="login-input-group">
                 <i class="fa-solid fa-user login-input-icon"></i>
-                <input type="text" id="loginUser" class="login-input" placeholder="نام کاربری" autocomplete="off" autofocus>
+               <input type="text" id="loginUser" class="login-input" data-i18n="username" placeholder="نام کاربری" autocomplete="off">
             </div>
             
             <div class="login-input-group">
                 <i class="fa-solid fa-lock login-input-icon"></i>
-                <input type="password" id="loginPass" class="login-input" placeholder="رمز عبور">
+               <input type="password" id="loginPass" class="login-input" data-i18n="password" placeholder="رمز عبور">
             </div>
-
-            <button type="submit" class="btn-login">
-                ورود به سیستم <i class="fa-solid fa-arrow-left" style="margin-right:8px"></i>
-            </button>
+       <button type="submit" class="btn-login">
+    <span data-i18n="loginBtn">ورود به سیستم</span> 
+    <i class="fa-solid fa-arrow-left" style="margin-right:8px"></i>
+</button>
         </form>
-        
+        <div style="margin-bottom: 20px; text-align: center;">
+    <select onchange="handleLangChange(this)" class="lux-select" style="width: 100%; text-align: center; background: rgba(0,0,0,0.5);">
+        <option value="fa,AF">🇦🇫 افغانستان (فارسی - AFN)</option>
+        <option value="fa,IR">🇮🇷 ایران (فارسی - Toman)</option>
+        <option value="ar,UAE">🇦🇪 الإمارات (العربية - AED)</option>
+        <option value="tr,TR">🇹🇷 Türkiye (Türkçe - TRY)</option>
+        <option value="en,US">🇺🇸 English (International - USD)</option>
+    </select>
+</div>
+
+<script>
+    function handleLangChange(select) {
+        const [lang, country] = select.value.split(',');
+        changeSystemConfig(lang, country);
+    }
+</script>
         <p id="loginError">نام کاربری یا رمز عبور اشتباه است</p>
         
         <div style="margin-top:20px; font-size:11px; color:rgba(255,255,255,0.3);">
@@ -1169,14 +1188,14 @@
             <div class="nav-item">
                 <div class="nav-link active" onclick="navigateTo('dashboard', this)">
                     <i class="fa-solid fa-chart-pie"></i>
-                    <span>داشبورد مدیریتی</span>
+                    <span data-i18n="navDashboard">داشبورد مدیریتی</span>
                 </div>
             </div>
             
             <div class="nav-item">
                 <div class="nav-link" onclick="toggleSubmenu(this)">
                     <i class="fa-solid fa-cash-register"></i>
-                    <span>صندوق و فروش</span>
+                    <span data-i18n="navPos">صندوق و فروش</span>
                     <i class="fa-solid fa-chevron-left arrow"></i>
                 </div>
                 <div class="submenu">
@@ -1195,7 +1214,7 @@
             <div class="nav-item">
                 <div class="nav-link" onclick="toggleSubmenu(this)">
                     <i class="fa-solid fa-calendar-check"></i>
-                    <span>نوبت‌دهی و رزرو</span>
+                    <span data-i18n="navAppointments">نوبت‌دهی و رزرو</span>
                     <i class="fa-solid fa-chevron-left arrow"></i>
                 </div>
                 <div class="submenu">
@@ -1211,7 +1230,7 @@
             <div class="nav-item">
                 <div class="nav-link" onclick="toggleSubmenu(this)">
                     <i class="fa-solid fa-wallet"></i>
-                    <span>حسابداری & مالیات</span>
+                    <span data-i18n="navAccounting">حسابداری و مالی</span>
                     <i class="fa-solid fa-chevron-left arrow"></i>
                 </div>
                 <div class="submenu">
@@ -1230,7 +1249,7 @@
             <div class="nav-item">
                 <div class="nav-link" onclick="toggleSubmenu(this)">
                     <i class="fa-solid fa-boxes-stacked"></i>
-                    <span>انبار محصولات</span>
+                    <span data-i18n="navInventory">انبار محصولات</span>
                     <i class="fa-solid fa-chevron-left arrow"></i>
                 </div>
                 <div class="submenu">
@@ -1246,28 +1265,28 @@
             <div class="nav-item">
                 <div class="nav-link" onclick="navigateTo('personnel', this)">
                     <i class="fa-solid fa-id-card-clip"></i>
-                    <span>پرسنل و حقوق</span>
+                    <span data-i18n="navPersonnel">پرسنل و حقوق</span>
                 </div>
             </div>
 
             <div class="nav-item">
                 <div class="nav-link" onclick="navigateTo('customers', this)">
                     <i class="fa-solid fa-users"></i>
-                    <span>باشگاه مشتریان</span>
+                    <span data-i18n="navCustomers">باشگاه مشتریان</span>
                 </div>
             </div>
             
              <div class="nav-item">
                 <div class="nav-link" onclick="navigateTo('services', this)">
                     <i class="fa-solid fa-scissors"></i>
-                    <span>مدیریت خدمات</span>
+                    <span data-i18n="navServices">مدیریت خدمات</span>
                 </div>
             </div>
 
             <div class="nav-item">
                 <div class="nav-link" onclick="navigateTo('settings', this)">
                     <i class="fa-solid fa-gear"></i>
-                    <span>تنظیمات سیستم</span>
+                    <span data-i18n="navSettings">تنظیمات سیستم</span>
                 </div>
             </div>
         </nav>
@@ -1321,117 +1340,121 @@
 
         <div class="page-container">
 
-            <div id="dashboard" class="page-section active">
-                
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <h3 style="color:var(--text-main); font-size:16px;">
-                        <i class="fa-solid fa-gauge-high" style="color:var(--gold-primary); margin-left:8px;"></i>
-                        نمای کلی روز
-                    </h3>
-                    <div style="display:flex; gap:10px;">
-                        <button class="gold-btn btn-sm" onclick="navigateTo('pos')">
-                            <i class="fa-solid fa-cart-plus"></i> فاکتور فروش
-                        </button>
-                    </div>
+           <div id="dashboard" class="page-section active">
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="color:var(--text-main); font-size:16px;">
+            <i class="fa-solid fa-gauge-high" style="color:var(--gold-primary); margin-left:8px;"></i>
+            <span data-i18n="dashOverview">نمای کلی روز</span>
+        </h3>
+        <div style="display:flex; gap:10px;">
+            <button class="gold-btn btn-sm" onclick="navigateTo('pos')">
+                <i class="fa-solid fa-cart-plus"></i> <span data-i18n="newFactor">فاکتور فروش</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="grid-4">
+        <div class="stat-card">
+            <div class="stat-icon-box" style="color:#00E676; border-color:rgba(0,230,118,0.3)">
+                <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label" data-i18n="todaySales">فروش امروز</div>
+                <div class="stat-value" id="dashTodayIncome" style="direction:ltr">0 ؋</div>
+                <div class="status-badge status-success" style="margin-top:5px;">
+                    <i class="fa-solid fa-arrow-trend-up"></i> فعال
                 </div>
+            </div>
+        </div>
 
-                <div class="grid-4">
-                    <div class="stat-card">
-                        <div class="stat-icon-box" style="color:#00E676; border-color:rgba(0,230,118,0.3)">
-                            <i class="fa-solid fa-sack-dollar"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-label">فروش امروز (افغانی)</div>
-                            <div class="stat-value" id="dashTodayIncome" style="direction:ltr">0 ؋</div>
-                            <div class="status-badge status-success" style="margin-top:5px;">
-                                <i class="fa-solid fa-arrow-trend-up"></i> فعال
-                            </div>
-                        </div>
-                    </div>
+        <div class="stat-card">
+            <div class="stat-icon-box" style="color:#FF5252; border-color:rgba(255,82,82,0.3)">
+                <i class="fa-solid fa-money-bill-transfer"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label" data-i18n="todayExpense">هزینه‌های امروز</div>
+                <div class="stat-value" id="dashTodayExpense" style="color:var(--danger); direction:ltr">0 ؋</div>
+            </div>
+        </div>
 
-                    <div class="stat-card">
-                        <div class="stat-icon-box" style="color:#FF5252; border-color:rgba(255,82,82,0.3)">
-                            <i class="fa-solid fa-money-bill-transfer"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-label">هزینه‌های امروز</div>
-                            <div class="stat-value" id="dashTodayExpense" style="color:var(--danger); direction:ltr">0 ؋</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon-box" style="color:var(--info); border-color:rgba(0,176,255,0.3)">
-                            <i class="fa-solid fa-users-line"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-label">نوبت‌های امروز</div>
-                            <div class="stat-value" id="dashTodayApts">0</div>
-                            <div style="font-size:11px; color:var(--text-muted); margin-top:5px;">
-                                <span id="dashPendingApts">0</span> در انتظار
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card" style="border-color:var(--gold-primary); background: linear-gradient(160deg, rgba(212,175,55,0.15), rgba(0,0,0,0.6));">
-                        <div class="stat-icon-box" style="background:var(--gold-gradient); color:#2D0008; border:none;">
-                            <i class="fa-solid fa-cash-register"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-label" style="color:var(--gold-light)">وضعیت صندوق</div>
-                            <div class="stat-value" id="dashRegisterStatus" style="font-size:18px;">بسته است</div>
-                            <button class="btn-sm" style="background:rgba(0,0,0,0.3); border:1px solid var(--gold-dark); color:var(--gold-light); margin-top:5px; border-radius:4px; cursor:pointer;" onclick="openModal('modalRegister')">
-                                مدیریت صندوق
-                            </button>
-                        </div>
-                    </div>
+        <div class="stat-card">
+            <div class="stat-icon-box" style="color:var(--info); border-color:rgba(0,176,255,0.3)">
+                <i class="fa-solid fa-users-line"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label" data-i18n="todayApts">نوبت‌های امروز</div>
+                <div class="stat-value" id="dashTodayApts">0</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:5px;">
+                    <span id="dashPendingApts">0</span> <span data-i18n="pending">در انتظار</span>
                 </div>
+            </div>
+        </div>
 
-                <div class="grid-2" style="margin-top:25px;">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title" style="font-weight:bold; color:var(--gold-light);">
-                                <i class="fa-solid fa-chart-area" style="margin-left:8px"></i>نمودار درآمد و هزینه (هفتگی)
-                            </div>
-                        </div>
-                        <div style="height: 300px; position: relative;">
-                            <canvas id="mainChart"></canvas>
-                        </div>
-                    </div>
+        <div class="stat-card" style="border-color:var(--gold-primary); background: linear-gradient(160deg, rgba(212,175,55,0.15), rgba(0,0,0,0.6));">
+            <div class="stat-icon-box" style="background:var(--gold-gradient); color:#2D0008; border:none;">
+                <i class="fa-solid fa-cash-register"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label" style="color:var(--gold-light)" data-i18n="regStatus">وضعیت صندوق</div>
+                <div class="stat-value" id="dashRegisterStatus" style="font-size:18px;">بسته است</div>
+                <button class="btn-sm" style="background:rgba(0,0,0,0.3); border:1px solid var(--gold-dark); color:var(--gold-light); margin-top:5px; border-radius:4px; cursor:pointer;" onclick="openModal('modalRegister')">
+                    <span data-i18n="regManage">مدیریت صندوق</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title" style="font-weight:bold; color:var(--gold-light);">
-                                <i class="fa-solid fa-ranking-star" style="margin-left:8px"></i>خدمات پرطرفدار
-                            </div>
-                        </div>
-                        <div style="height: 300px; position: relative;">
-                            <canvas id="servicesChart"></canvas>
-                        </div>
-                    </div>
+    <div class="grid-2" style="margin-top:25px;">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title" style="font-weight:bold; color:var(--gold-light);">
+                    <i class="fa-solid fa-chart-area" style="margin-left:8px"></i>
+                    <span data-i18n="chartIncome">نمودار درآمد و هزینه</span>
                 </div>
+            </div>
+            <div style="height: 300px; position: relative;">
+                <canvas id="mainChart"></canvas>
+            </div>
+        </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title" style="font-weight:bold; color:var(--gold-light);">آخرین فعالیت‌ها و تراکنش‌ها</div>
-                        <button class="gold-btn btn-sm" onclick="navigateTo('accounting')">مشاهده همه</button>
-                    </div>
-                    <div class="table-container">
-                        <table class="lux-table">
-                            <thead>
-                                <tr>
-                                    <th>زمان</th>
-                                    <th>شرح فعالیت</th>
-                                    <th>مبلغ (AFN)</th>
-                                    <th>نوع</th>
-                                    <th>کاربر</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dashRecentTxBody">
-                                <tr><td colspan="5" class="text-center">در حال بارگذاری...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title" style="font-weight:bold; color:var(--gold-light);">
+                    <i class="fa-solid fa-ranking-star" style="margin-left:8px"></i>
+                    <span data-i18n="chartServices">خدمات پرطرفدار</span>
                 </div>
+            </div>
+            <div style="height: 300px; position: relative;">
+                <canvas id="servicesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title" style="font-weight:bold; color:var(--gold-light);" data-i18n="recentTx">آخرین فعالیت‌ها</div>
+            <button class="gold-btn btn-sm" onclick="navigateTo('accounting')" data-i18n="viewAll">مشاهده همه</button>
+        </div>
+        <div class="table-container">
+            <table class="lux-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="tblTime">زمان</th>
+                        <th data-i18n="tblDesc">شرح فعالیت</th>
+                        <th data-i18n="tblAmount">مبلغ</th>
+                        <th data-i18n="tblType">نوع</th>
+                        <th data-i18n="tblUser">کاربر</th>
+                    </tr>
+                </thead>
+                <tbody id="dashRecentTxBody">
+                    <tr><td colspan="5" class="text-center" data-i18n="loading">در حال بارگذاری...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
 
             </div> 
 <div id="pos" class="page-section">
@@ -2483,6 +2506,9 @@
 // =========================================
 // 1. DATABASE STRUCTURE & STATE
 // =========================================
+
+let currentLang = 'fa';
+let currentCountry = 'AF';
 let db = {
     settings: {
         name: 'Royal Salon AF',
@@ -2510,14 +2536,345 @@ let db = {
         salesCard: 0
     }
 };
-// === این کد را اینجا اضافه کنید ===
-const Money = {
-    round: (num) => Math.round(num),
-    format: (amount) => {
-        if (amount === undefined || amount === null) amount = 0;
-        return new Intl.NumberFormat('en-US').format(Math.round(amount)) + ' ؋';
+
+// === شروع کد جدید: تنظیمات چند زبانه و چند کشوری ===
+
+// 1. تنظیمات کشورها (پول و مالیات)
+const countryConfigs = {
+    'AF': { currency: '؋', currencyCode: 'AFN', taxRate: 4, taxName: 'BRT', dir: 'rtl', font: "'Vazirmatn', sans-serif" }, // افغانستان
+    'IR': { currency: 'تومان', currencyCode: 'IRT', taxRate: 10, taxName: 'VAT', dir: 'rtl', font: "'Vazirmatn', sans-serif" }, // ایران
+    'UAE': { currency: 'د.إ', currencyCode: 'AED', taxRate: 5, taxName: 'VAT', dir: 'rtl', font: "'Vazirmatn', sans-serif" }, // امارات (عربی)
+    'TR': { currency: '₺', currencyCode: 'TRY', taxRate: 20, taxName: 'KDV', dir: 'ltr', font: "sans-serif" }, // ترکیه
+    'US': { currency: '$', currencyCode: 'USD', taxRate: 0, taxName: 'Tax', dir: 'ltr', font: "sans-serif" } // انگلیسی بین‌المللی
+};
+// این تابع را قبل از translations اضافه کنید
+function t(key) {
+    const lang = currentLang || 'fa';
+    if (translations[lang] && translations[lang][key]) {
+        return translations[lang][key];
+    }
+    return key; // اگر ترجمه پیدا نشد، خود کلید را برگردان
+}
+// 2. دیکشنری کلمات (ترجمه‌ها)
+// دیکشنری کامل و جدید (جایگزین قبلی شود)
+
+const translations = {
+    'fa': {
+        // --- عمومی ---
+        appTitle: "رویال سالن",
+        appSubtitle: "سیستم مدیریت هوشمند",
+        username: "نام کاربری",
+        password: "رمز عبور",
+        loginBtn: "ورود به سیستم",
+        loading: "در حال بارگذاری...",
+        search: "جستجو...",
+        viewAll: "مشاهده همه",
+        // --- منو ---
+        navDashboard: "داشبورد مدیریتی",
+        navPos: "صندوق و فروش",
+        navAppointments: "نوبت‌دهی و رزرو",
+        navAccounting: "حسابداری و مالی",
+        navInventory: "انبار محصولات",
+        navPersonnel: "پرسنل و حقوق",
+        navCustomers: "باشگاه مشتریان",
+        navServices: "مدیریت خدمات",
+        navSettings: "تنظیمات سیستم",
+        navLogout: "خروج",
+        // --- داشبورد ---
+        dashOverview: "نمای کلی روز",
+        newFactor: "فاکتور فروش",
+        todaySales: "فروش امروز",
+        todayExpense: "هزینه‌های امروز",
+        todayApts: "نوبت‌های امروز",
+        pending: "در انتظار",
+        regStatus: "وضعیت صندوق",
+        regManage: "مدیریت صندوق",
+        chartIncome: "نمودار درآمد و هزینه",
+        chartServices: "خدمات پرطرفدار",
+        recentTx: "آخرین فعالیت‌ها",
+        // --- جدول‌ها ---
+        tblTime: "زمان",
+        tblDesc: "شرح فعالیت",
+        tblAmount: "مبلغ",
+        tblType: "نوع",
+        tblUser: "کاربر",
+        tblAction: "عملیات",
+        // --- صندوق فروش ---
+        posTitle: "صندوق فروشگاهی",
+        posStatus: "وضعیت صندوق:",
+        posSearchPlace: "جستجوی خدمت یا کالا...",
+        catAll: "همه دسته‌ها",
+        catService: "خدمات",
+        catProduct: "محصولات",
+        lblCustomer: "مشتری:",
+        lblGuest: "مشتری مهمان",
+        cartEmpty: "سبد خرید خالی است",
+        lblSubtotal: "جمع جزء:",
+        lblTax: "مالیات:",
+        lblTotal: "مبلغ قابل پرداخت:",
+        lblCash: "پرداخت نقدی",
+        lblCard: "کارتخوان",
+        btnCancel: "لغو",
+        btnSubmit: "ثبت نهایی"
+    },
+    'en': {
+        // --- General ---
+        appTitle: "Royal Salon",
+        appSubtitle: "Smart Management System",
+        username: "Username",
+        password: "Password",
+        loginBtn: "Login",
+        loading: "Loading...",
+        search: "Search...",
+        viewAll: "View All",
+        // --- Menu ---
+        navDashboard: "Dashboard",
+        navPos: "POS & Sales",
+        navAppointments: "Appointments",
+        navAccounting: "Accounting",
+        navInventory: "Inventory",
+        navPersonnel: "Staff & HR",
+        navCustomers: "Customers",
+        navServices: "Services",
+        navSettings: "Settings",
+        navLogout: "Logout",
+        // --- Dashboard ---
+        dashOverview: "Daily Overview",
+        newFactor: "New Sale",
+        todaySales: "Today's Sales",
+        todayExpense: "Today's Expenses",
+        todayApts: "Today's Appointments",
+        pending: "Pending",
+        regStatus: "Register Status",
+        regManage: "Manage Register",
+        chartIncome: "Income & Expense Chart",
+        chartServices: "Popular Services",
+        recentTx: "Recent Activities",
+        // --- Tables ---
+        tblTime: "Time",
+        tblDesc: "Description",
+        tblAmount: "Amount",
+        tblType: "Type",
+        tblUser: "User",
+        tblAction: "Action",
+        // --- POS ---
+        posTitle: "Point of Sale",
+        posStatus: "Register Status:",
+        posSearchPlace: "Search service or product...",
+        catAll: "All Categories",
+        catService: "Services",
+        catProduct: "Products",
+        lblCustomer: "Customer:",
+        lblGuest: "Guest Customer",
+        cartEmpty: "Cart is empty",
+        lblSubtotal: "Subtotal:",
+        lblTax: "Tax:",
+        lblTotal: "Total Payable:",
+        lblCash: "Cash Payment",
+        lblCard: "Card Payment",
+        btnCancel: "Cancel",
+        btnSubmit: "Checkout"
+    },
+    'tr': {
+        // --- Genel ---
+        appTitle: "Royal Salon",
+        appSubtitle: "Akıllı Yönetim Sistemi",
+        username: "Kullanıcı Adı",
+        password: "Şifre",
+        loginBtn: "Giriş Yap",
+        loading: "Yükleniyor...",
+        search: "Ara...",
+        viewAll: "Hepsini Gör",
+        // --- Menü ---
+        navDashboard: "Gösterge Paneli",
+        navPos: "Kasa ve Satış",
+        navAppointments: "Randevular",
+        navAccounting: "Muhasebe",
+        navInventory: "Stok Yönetimi",
+        navPersonnel: "Personel",
+        navCustomers: "Müşteriler",
+        navServices: "Hizmetler",
+        navSettings: "Ayarlar",
+        navLogout: "Çıkış Yap",
+        // --- Dashboard ---
+        dashOverview: "Günlük Genel Bakış",
+        newFactor: "Yeni Satış",
+        todaySales: "Bugünkü Satışlar",
+        todayExpense: "Bugünkü Giderler",
+        todayApts: "Bugünkü Randevular",
+        pending: "Bekleyen",
+        regStatus: "Kasa Durumu",
+        regManage: "Kasayı Yönet",
+        chartIncome: "Gelir ve Gider Tablosu",
+        chartServices: "Popüler Hizmetler",
+        recentTx: "Son Aktiviteler",
+        // --- Tablolar ---
+        tblTime: "Zaman",
+        tblDesc: "Açıklama",
+        tblAmount: "Tutar",
+        tblType: "Tür",
+        tblUser: "Kullanıcı",
+        tblAction: "İşlem",
+        // --- POS ---
+        posTitle: "Satış Noktası (POS)",
+        posStatus: "Kasa Durumu:",
+        posSearchPlace: "Hizmet veya ürün ara...",
+        catAll: "Tüm Kategoriler",
+        catService: "Hizmetler",
+        catProduct: "Ürünler",
+        lblCustomer: "Müşteri:",
+        lblGuest: "Misafir Müşteri",
+        cartEmpty: "Sepet boş",
+        lblSubtotal: "Ara Toplam:",
+        lblTax: "Vergi:",
+        lblTotal: "Ödenecek Tutar:",
+        lblCash: "Nakit Ödeme",
+        lblCard: "Kart Ödemesi",
+        btnCancel: "İptal",
+        btnSubmit: "Ödemeyi Tamamla"
+    },
+    'ar': {
+        // --- عام ---
+        appTitle: "رويال صالون",
+        appSubtitle: "نظام الإدارة الذكي",
+        username: "اسم المستخدم",
+        password: "كلمة المرور",
+        loginBtn: "تسجيل الدخول",
+        loading: "جار التحميل...",
+        search: "بحث...",
+        viewAll: "عرض الكل",
+        // --- القائمة ---
+        navDashboard: "لوحة القيادة",
+        navPos: "نقطة البيع",
+        navAppointments: "المواعيد",
+        navAccounting: "المحاسبة",
+        navInventory: "المخزون",
+        navPersonnel: "الموظفين",
+        navCustomers: "العملاء",
+        navServices: "الخدمات",
+        navSettings: "الإعدادات",
+        navLogout: "خروج",
+        // --- لوحة القيادة ---
+        dashOverview: "نظرة عامة يومية",
+        newFactor: "بيع جديد",
+        todaySales: "مبيعات اليوم",
+        todayExpense: "نفقات اليوم",
+        todayApts: "مواعيد اليوم",
+        pending: "قيد الانتظار",
+        regStatus: "حالة الصندوق",
+        regManage: "إدارة الصندوق",
+        chartIncome: "مخطط الإيرادات والمصروفات",
+        chartServices: "الخدمات الشائعة",
+        recentTx: "النشاطات الأخيرة",
+        // --- الجداول ---
+        tblTime: "الوقت",
+        tblDesc: "الوصف",
+        tblAmount: "المبلغ",
+        tblType: "النوع",
+        tblUser: "المستخدم",
+        tblAction: "إجراء",
+        // --- POS ---
+        posTitle: "نقطة البيع",
+        posStatus: "حالة الصندوق:",
+        posSearchPlace: "البحث عن خدمة أو منتج...",
+        catAll: "جميع الفئات",
+        catService: "خدمات",
+        catProduct: "منتجات",
+        lblCustomer: "العميل:",
+        lblGuest: "عميل زائر",
+        cartEmpty: "عربة التسوق فارغة",
+        lblSubtotal: "المجموع الفرعي:",
+        lblTax: "الضريبة:",
+        lblTotal: "المبلغ المستحق:",
+        lblCash: "دفع نقدي",
+        lblCard: "دفع بالبطاقة",
+        btnCancel: "إلغاء",
+        btnSubmit: "إتمام الدفع"
     }
 };
+
+
+
+
+function changeSystemConfig(lang, country) {
+    // 1. بروزرسانی متغیرهای سراسری
+    if (typeof currentLang !== 'undefined') currentLang = lang;
+    if (typeof currentCountry !== 'undefined') currentCountry = country;
+
+    // 2. تنظیمات کشور (جهت و فونت)
+    if (typeof countryConfigs !== 'undefined') {
+        var config = countryConfigs[country] || countryConfigs['AF'];
+        document.documentElement.setAttribute('dir', config.dir);
+        document.documentElement.setAttribute('lang', lang);
+        document.body.style.fontFamily = config.font;
+    }
+
+    // 3. ترجمه متن‌های صفحه
+    if (typeof translations !== 'undefined') {
+        var tr = translations[lang];
+        if (tr) {
+            var elements = document.querySelectorAll('[data-i18n]');
+            for (var i = 0; i < elements.length; i++) {
+                var element = elements[i];
+                var key = element.getAttribute('data-i18n');
+                if (tr[key]) {
+                    if (element.tagName === 'INPUT' && element.getAttribute('placeholder')) {
+                        element.placeholder = tr[key];
+                    } else {
+                        // حفظ آیکون‌ها
+                        if (element.children.length > 0 && element.innerHTML.indexOf('<i') > -1) {
+                            var iconMatch = element.innerHTML.match(/<i.*><\/i>/);
+                            if (iconMatch) {
+                                element.innerHTML = iconMatch[0] + " " + tr[key];
+                            } else {
+                                element.innerText = tr[key];
+                            }
+                        } else {
+                            element.innerText = tr[key];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // 4. ذخیره تنظیمات در دیتابیس
+    if (typeof db !== 'undefined' && db.settings) {
+        db.settings.language = lang;
+        db.settings.country = country;
+        if (typeof saveData === 'function') saveData();
+    }
+
+    // 5. رفرش کردن صفحات فعال (برای اعمال زبان جدید)
+    if (typeof updateDateDisplay === 'function') updateDateDisplay();
+
+    // رفرش کردن بخش‌های مختلف اگر فعال باشند
+    if (document.getElementById('dashboard') && document.getElementById('dashboard').classList.contains('active') && typeof renderDashboard === 'function') renderDashboard();
+    if (document.getElementById('pos') && document.getElementById('pos').classList.contains('active') && typeof initPos === 'function') initPos();
+    if (document.getElementById('accounting') && document.getElementById('accounting').classList.contains('active') && typeof renderAccounting === 'function') renderAccounting();
+    if (document.getElementById('inventory') && document.getElementById('inventory').classList.contains('active') && typeof renderInventory === 'function') renderInventory();
+    if (document.getElementById('debts') && document.getElementById('debts').classList.contains('active') && typeof renderDebts === 'function') renderDebts();
+    if (document.getElementById('appointments') && document.getElementById('appointments').classList.contains('active') && typeof renderAppointments === 'function') renderAppointments();
+    if (document.getElementById('customers') && document.getElementById('customers').classList.contains('active') && typeof renderCustomers === 'function') renderCustomers();
+    if (document.getElementById('services') && document.getElementById('services').classList.contains('active') && typeof renderServices === 'function') renderServices();
+    if (document.getElementById('personnel') && document.getElementById('personnel').classList.contains('active') && typeof renderPersonnel === 'function') renderPersonnel();
+
+    // آپدیت نام در سایدبار
+    var sidebarName = document.getElementById('sidebarUserName');
+    if (sidebarName && typeof db !== 'undefined' && db.settings) {
+        sidebarName.innerText = db.settings.name;
+    }
+}
+// تابع ایمن‌سازی ورودی‌ها (Sanitization)
+function escapeHTML(str) {
+    if (!str) return '';
+    return str.toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
 // جایگزین تابع قدیمی (این خط تابع قبلی را بازنویسی می‌کند)
 function formatMoney(amount) { return Money.format(amount); }
 // ================================
@@ -2621,15 +2978,25 @@ function seedDummyData() {
 // =========================================
 // 3. HELPER FUNCTIONS
 // =========================================
-
-// Format Money (Afghan Afghani)
+// ✅ کد جدید و درست (جایگزین شود) ✅
 function formatMoney(amount) {
     if (amount === undefined || amount === null) amount = 0;
-    // Format: 1,250 ؋
-    return new Intl.NumberFormat('en-US').format(amount) + ' ؋';
+    
+    // 1. پیدا کردن تنظیمات کشور فعلی (اگر متغیر currentCountry تعریف نشده بود، AF را پیش‌فرض بگیر)
+    // نکته: مطمئن شوید متغیر currentCountry در بالای فایل تعریف شده باشد
+    const safeCountry = (typeof currentCountry !== 'undefined') ? currentCountry : 'AF';
+    const config = countryConfigs[safeCountry] || countryConfigs['AF'];
+    
+    // 2. فرمت کردن عدد (سه رقم سه رقم)
+    const formattedNumber = new Intl.NumberFormat('en-US').format(Math.round(amount));
+    
+    // 3. چسباندن نماد پول با توجه به جهت زبان
+    if (config.dir === 'rtl') {
+        return formattedNumber + ' ' + config.currency; // مثلا: 1,000 ؋
+    } else {
+        return config.currency + formattedNumber; // مثلا: $1,000
+    }
 }
-
-// Generate Unique ID
 function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
 }
@@ -2759,23 +3126,14 @@ function initPos() {
 function renderPosItems() {
     const grid = document.getElementById('posItemsGrid');
     const search = document.getElementById('posSearch').value.toLowerCase();
-    const filter = document.getElementById('posCatFilter').value; // 'all', 'service', 'product'
+    const filter = document.getElementById('posCatFilter').value;
     
     grid.innerHTML = '';
     
     let items = [];
+    if (filter === 'all' || filter === 'service') db.services.forEach(s => items.push({ ...s, type: 'service' }));
+    if (filter === 'all' || filter === 'product') db.inventory.forEach(p => items.push({ ...p, type: 'product', price: p.sellPrice }));
     
-    // 1. Get Services
-    if (filter === 'all' || filter === 'service') {
-        db.services.forEach(s => items.push({ ...s, type: 'service' }));
-    }
-    
-    // 2. Get Products (Inventory)
-    if (filter === 'all' || filter === 'product') {
-        db.inventory.forEach(p => items.push({ ...p, type: 'product', price: p.sellPrice }));
-    }
-    
-    // 3. Filter by Search
     items = items.filter(i => i.name.toLowerCase().includes(search));
     
     if (items.length === 0) {
@@ -2783,7 +3141,6 @@ function renderPosItems() {
         return;
     }
 
-    // 4. Render Cards
     items.forEach(item => {
         const isProduct = item.type === 'product';
         let stockLabel = '';
@@ -2803,11 +3160,12 @@ function renderPosItems() {
         card.style = `padding:15px; cursor:pointer; transition:0.2s; position:relative; overflow:hidden; border:1px solid rgba(212,175,55,0.1); ${disabledClass}`;
         card.onclick = () => { if(!isProduct || item.stock > 0) addToCart(item); };
         
+        // نام کالا ایمن شد
         card.innerHTML = `
             <div style="font-size:24px; color:var(--gold-dark); margin-bottom:10px; text-align:center;">
                 <i class="${item.icon || (isProduct ? 'fa-solid fa-box' : 'fa-solid fa-scissors')}"></i>
             </div>
-            <div style="font-weight:bold; font-size:13px; margin-bottom:5px; text-align:center;">${item.name}</div>
+            <div style="font-weight:bold; font-size:13px; margin-bottom:5px; text-align:center;">${escapeHTML(item.name)}</div>
             <div style="font-size:14px; color:var(--gold-light); text-align:center; direction:ltr;">${formatMoney(item.price)}</div>
             <div style="text-align:center; margin-top:5px;">${stockLabel}</div>
         `;
@@ -2876,7 +3234,6 @@ function clearCart() {
         renderCart();
     }
 }
-
 function renderCart() {
     const container = document.getElementById('posCartItems');
     container.innerHTML = '';
@@ -2892,9 +3249,11 @@ function renderCart() {
     posCart.forEach((item, index) => {
         const div = document.createElement('div');
         div.style = 'background:rgba(255,255,255,0.05); padding:10px; margin-bottom:8px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;';
+        
+        // نام کالا در سبد خرید ایمن شد
         div.innerHTML = `
             <div style="flex:1;">
-                <div style="font-weight:bold; font-size:13px;">${item.name}</div>
+                <div style="font-weight:bold; font-size:13px;">${escapeHTML(item.name)}</div>
                 <div style="font-size:11px; color:var(--text-muted);">
                     ${formatMoney(item.price)} × ${item.qty}
                 </div>
@@ -2913,7 +3272,6 @@ function renderCart() {
 
     updateCartTotals();
 }
-// === توابع جدید پرداخت ===
 function autoCalcCard() {
     const total = parseFloat(document.getElementById('posTotal').getAttribute('data-raw')) || 0;
     const cash = parseFloat(document.getElementById('payCashInput').value) || 0;
@@ -3086,15 +3444,10 @@ function populatePosCustomers() {
 // =========================================
 
 function renderDashboard() {
-    // Calculate Daily Stats
-    const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD local
-    // Note: In real app, match timestamps properly. Here we use simple filters.
-    
     // 1. Income & Expense
     let todayIncome = 0;
     let todayExpense = 0;
     
-    // Filter transactions for "today" (approximate for demo)
     const now = new Date();
     const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     
@@ -3116,7 +3469,7 @@ function renderDashboard() {
     // 3. Register Status
     document.getElementById('dashRegisterStatus').innerText = db.posSession.isOpen ? 'باز است' : 'بسته است';
 
-    // 4. Recent Transactions Table
+    // 4. Recent Transactions Table (ایمن سازی شده)
     const tbody = document.getElementById('dashRecentTxBody');
     tbody.innerHTML = '';
     
@@ -3130,26 +3483,25 @@ function renderDashboard() {
             let typeColor = tx.type === 'income' ? 'var(--success)' : 'var(--danger)';
             let typeIcon = tx.type === 'income' ? 'arrow-up' : 'arrow-down';
             
+            // تغییرات امنیتی در اینجا اعمال شد (escapeHTML)
             tbody.innerHTML += `
                 <tr>
                     <td style="color:var(--text-muted)">${dateStr}</td>
-                    <td>${tx.category} - <span style="font-size:12px; opacity:0.7">${tx.desc}</span></td>
+                    <td>${escapeHTML(tx.category)} - <span style="font-size:12px; opacity:0.7">${escapeHTML(tx.desc)}</span></td>
                     <td style="color:${typeColor}; direction:ltr; font-weight:bold;">
                         ${formatMoney(tx.amount)}
                     </td>
                     <td><div class="status-badge" style="color:${typeColor}; border-color:${typeColor}20; background:${typeColor}10">
                         <i class="fa-solid fa-${typeIcon}"></i> ${tx.type === 'income' ? 'درآمد' : 'هزینه'}
                     </div></td>
-                    <td style="font-size:12px;">${tx.user}</td>
+                    <td style="font-size:12px;">${escapeHTML(tx.user)}</td>
                 </tr>
             `;
         });
     }
 
-    // Update Chart (Mock Data for Demo)
     renderCharts(); 
 }
-
 function renderAccounting() {
     const tbody = document.getElementById('accountingBody');
     const filterType = document.getElementById('accFilterType').value;
@@ -3166,16 +3518,17 @@ function renderAccounting() {
         const dateStr = new Date(tx.date).toLocaleDateString('fa-IR') + ' ' + new Date(tx.date).toLocaleTimeString('fa-IR', {hour:'2-digit', minute:'2-digit'});
         const color = tx.type === 'income' ? 'var(--success)' : 'var(--danger)';
         
+        // ایمن‌سازی دسته‌بندی، توضیحات و کاربر
         tbody.innerHTML += `
             <tr>
                 <td>${index + 1}</td>
                 <td>${dateStr}</td>
                 <td><span style="color:${color}">${tx.type === 'income' ? 'درآمد' : 'هزینه'}</span></td>
-                <td>${tx.category}</td>
-                <td>${tx.desc}</td>
+                <td>${escapeHTML(tx.category)}</td>
+                <td>${escapeHTML(tx.desc)}</td>
                 <td style="font-weight:bold; color:${color}; direction:ltr">${formatMoney(tx.amount)}</td>
                 <td style="font-size:11px; color:var(--text-muted)">${tx.tax > 0 ? formatMoney(tx.tax) : '-'}</td>
-                <td>${tx.user}</td>
+                <td>${escapeHTML(tx.user)}</td>
                 <td>
                     <button class="btn-sm" onclick="deleteItem('transactions', '${tx.id}')" style="color:var(--danger)"><i class="fa-solid fa-trash"></i></button>
                 </td>
@@ -3183,7 +3536,6 @@ function renderAccounting() {
         `;
     });
 
-    // Update Summary Cards
     const totalInc = list.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
     const totalExp = list.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
     
@@ -3191,17 +3543,11 @@ function renderAccounting() {
     document.getElementById('accTotalExpense').innerText = formatMoney(totalExp);
     document.getElementById('accBalance').innerText = formatMoney(totalInc - totalExp);
 }
-
 function renderDebts() {
     const tbody = document.getElementById('debtsBody');
     tbody.innerHTML = '';
     
-    // Mock Debt Calculation: For demo, using static 'db.debts' or filtering customers with debt
-    // Here we'll iterate customers who have debt notes or negative balance simulation
-    
-    // Let's assume we store debts in db.debts manually for now
     if(!db.debts) db.debts = [];
-    
     let totalDebt = 0;
 
     if(db.debts.length === 0) {
@@ -3209,10 +3555,11 @@ function renderDebts() {
     } else {
         db.debts.forEach(d => {
             totalDebt += d.amount;
+            // ایمن‌سازی نام و تلفن
             tbody.innerHTML += `
                 <tr>
-                    <td>${d.name}</td>
-                    <td>${d.phone}</td>
+                    <td>${escapeHTML(d.name)}</td>
+                    <td>${escapeHTML(d.phone)}</td>
                     <td style="color:var(--danger); font-weight:bold; direction:ltr">${formatMoney(d.amount)}</td>
                     <td>${d.lastDate}</td>
                     <td><span class="status-badge status-danger">پرداخت نشده</span></td>
@@ -3240,10 +3587,11 @@ function renderInventory() {
         let status = item.stock > 0 ? '<span class="status-badge status-success">موجود</span>' : '<span class="status-badge status-danger">ناموجود</span>';
         if(item.stock > 0 && item.stock <= item.lowStockAlert) status = '<span class="status-badge status-warning">رو به اتمام</span>';
 
+        // ایمن‌سازی نام کالا و برند
         tbody.innerHTML += `
             <tr>
-                <td><strong>${item.name}</strong></td>
-                <td>${item.brand || '-'}</td>
+                <td><strong>${escapeHTML(item.name)}</strong></td>
+                <td>${escapeHTML(item.brand || '-')}</td>
                 <td style="font-weight:bold; ${item.stock <= item.lowStockAlert ? 'color:var(--danger)' : ''}">${item.stock}</td>
                 <td style="direction:ltr">${formatMoney(item.buyPrice)}</td>
                 <td style="direction:ltr; color:var(--gold-light)">${formatMoney(item.sellPrice)}</td>
@@ -3259,16 +3607,15 @@ function renderInventory() {
     document.getElementById('invTotalValue').innerText = formatMoney(totalValue);
     document.getElementById('invLowStock').innerText = lowStock;
 }
-
-// ... Simple renders for others ...
 function renderCustomers() {
     const tbody = document.getElementById('customersBody');
     tbody.innerHTML = '';
     db.customers.forEach(c => {
+        // ایمن‌سازی نام و تلفن
         tbody.innerHTML += `
             <tr>
-                <td>${c.name}</td>
-                <td>${c.phone}</td>
+                <td>${escapeHTML(c.name)}</td>
+                <td>${escapeHTML(c.phone)}</td>
                 <td>-</td>
                 <td>0</td>
                 <td>0</td>
@@ -3277,48 +3624,69 @@ function renderCustomers() {
     });
     document.getElementById('crmTotalCust').innerText = db.customers.length;
 }
-
 function renderServices() {
     const grid = document.getElementById('servicesGrid');
     grid.innerHTML = '';
     db.services.forEach(s => {
+        // ایمن‌سازی نام خدمت
         grid.innerHTML += `
             <div class="card" style="margin:0; padding:20px; text-align:center;">
                 <div style="font-size:30px; color:var(--gold-dark); margin-bottom:10px;"><i class="${s.icon}"></i></div>
-                <h4 style="color:var(--text-main);">${s.name}</h4>
+                <h4 style="color:var(--text-main);">${escapeHTML(s.name)}</h4>
                 <div style="color:var(--gold-light); font-weight:bold; margin:10px 0; direction:ltr;">${formatMoney(s.price)}</div>
                 <div style="font-size:12px; color:var(--text-muted);">زمان: ${s.duration} دقیقه</div>
             </div>`;
     });
 }
-
-// =========================================
-// 7. ACTION FUNCTIONS & MODAL LOGIC
-// =========================================
-
 function handleLogin() {
+    // 1. دریافت ورودی‌ها
     const u = document.getElementById('loginUser').value;
     const p = document.getElementById('loginPass').value;
     
-    // Simple check (Real app uses secure auth)
+    // 2. بررسی رمز عبور (روی دیتابیس فعلی)
+    // نکته: اگر دیتابیس لود نشده باشد، با مقادیر پیش‌فرض چک می‌کند
     if (u === db.settings.auth.user && p === db.settings.auth.pass) {
+        
+        // مخفی کردن صفحه ورود و نمایش برنامه اصلی
         document.getElementById('loginPage').style.display = 'none';
         document.getElementById('mainApp').style.display = 'flex';
-        initApp();
+        
+        // 3. اول سیستم را راه اندازی و اطلاعات را لود کنید
+        initApp(); 
+
+        // 4. حالا تنظیمات زبان را اعمال کنید (داخل try-catch تا اگر خطا داد برنامه نپرد)
+        try {
+            const langSelect = document.querySelector('select[onchange="handleLangChange(this)"]');
+            let selectedLang = 'fa';
+            let selectedCountry = 'AF';
+
+            if (langSelect && langSelect.value) {
+                const parts = langSelect.value.split(',');
+                if (parts.length === 2) {
+                    selectedLang = parts[0];
+                    selectedCountry = parts[1];
+                }
+            }
+            
+            // تغییر کانفیگ بعد از لود شدن کامل دیتا
+            changeSystemConfig(selectedLang, selectedCountry);
+            
+        } catch (error) {
+            console.error("Error in language config:", error);
+            // حتی اگر تغییر زبان خطا داد، برنامه باز شود
+        }
+
+        // رفرش نهایی داشبورد
+        if(typeof renderDashboard === 'function') renderDashboard();
+        
     } else {
+        // نمایش خطا
         const err = document.getElementById('loginError');
         err.style.display = 'block';
+        err.innerText = "نام کاربری یا رمز عبور اشتباه است";
         setTimeout(() => err.style.display = 'none', 2000);
     }
 }
-
-function handleLogout() {
-    if(confirm('آیا مطمئن هستید؟')) {
-        location.reload();
-    }
-}
-
-// Register Actions
 function openRegister() {
     const cash = parseFloat(document.getElementById('regStartCash').value) || 0;
     db.posSession = {
@@ -3591,27 +3959,63 @@ function printInvoice(invoice) {
     `);
     printWindow.document.close();
 }
+// تعریف متغیر بیرون از تابع برای نگهداری وضعیت نمودار
+let myChartInstance = null;
+
 function renderCharts() {
-    // Mock Chart.js implementation
     const ctx = document.getElementById('mainChart');
+    
+    // اگر نمودار قبلی وجود دارد، آن را نابود کن تا حافظه خالی شود
+    if (myChartInstance) {
+        myChartInstance.destroy();
+    }
+
     if(ctx && window.Chart) {
-        new Chart(ctx, {
+        myChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: ['شنبه', 'یکشنبه', 'دوشنبه', 'سه شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'],
                 datasets: [{
-                    label: 'درآمد',
-                    data: [12000, 19000, 3000, 5000, 2000, 30000, 45000], // Random data
+                    label: 'درآمد (AFN)',
+                    data: [12000, 19000, 3000, 5000, 2000, 30000, 45000], 
                     borderColor: '#D4AF37',
                     backgroundColor: 'rgba(212, 175, 55, 0.2)',
-                    fill: true
+                    fill: true,
+                    tension: 0.4 // نرم کردن خط نمودار
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#D4AF37' } // رنگ متن راهنما
+                    }
+                },
+                scales: {
+                    y: { ticks: { color: '#rgba(255,255,255,0.7)' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+                    x: { ticks: { color: '#rgba(255,255,255,0.7)' }, grid: { color: 'rgba(255,255,255,0.1)' } }
+                }
+            }
         });
     }
 }
-
+// =========================================
+// LOGOUT FUNCTION - خروج از برنامه
+// =========================================
+function handleLogout() {
+    if(confirm('آیا می‌خواهید از سیستم خارج شوید؟')) {
+        // نمایش صفحه ورود
+        document.getElementById('mainApp').style.display = 'none';
+        document.getElementById('loginPage').style.display = 'flex';
+        
+        // پاک کردن فیلدهای ورود
+        document.getElementById('loginUser').value = '';
+        document.getElementById('loginPass').value = '';
+        
+        showToast('با موفقیت خارج شدید', 'info');
+    }
+}
 function toggleTheme() {
     const html = document.documentElement;
     const current = html.getAttribute('data-theme');
@@ -3696,9 +4100,6 @@ function toggleTaxInput() {
         if(type === 'none') db.settings.taxRate = 0;
     }
 }
-// =========================================
-// 10. PERSONNEL, APPOINTMENTS & NAVIGATION (ADDED)
-// =========================================
 
 function toggleSubmenu(element) {
     element.classList.toggle('active');
@@ -3715,17 +4116,16 @@ function renderPersonnel() {
 
     if(tbody) tbody.innerHTML = '';
     
-    // Reset Dropdowns
     if(select) select.innerHTML = '<option value="">-- انتخاب پرسنل --</option>';
     if(aptSelect) aptSelect.innerHTML = '<option value="">-- انتخاب --</option>';
 
     db.staff.forEach(s => {
-        // 1. Fill Table
         if(tbody) {
+            // ایمن‌سازی نام و نقش پرسنل
             tbody.innerHTML += `
                 <tr>
-                    <td><strong>${s.name}</strong></td>
-                    <td>${s.role}</td>
+                    <td><strong>${escapeHTML(s.name)}</strong></td>
+                    <td>${escapeHTML(s.role)}</td>
                     <td style="direction:ltr">${formatMoney(s.baseSalary)}</td>
                     <td>${s.comm}%</td>
                     <td><span class="status-badge status-success">فعال</span></td>
@@ -3735,12 +4135,10 @@ function renderPersonnel() {
                 </tr>
             `;
         }
-        // 2. Fill Dropdowns
-        if(select) select.innerHTML += `<option value="${s.id}">${s.name}</option>`;
-        if(aptSelect) aptSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+        if(select) select.innerHTML += `<option value="${s.id}">${escapeHTML(s.name)}</option>`;
+        if(aptSelect) aptSelect.innerHTML += `<option value="${s.id}">${escapeHTML(s.name)}</option>`;
     });
 }
-
 function saveStaff() {
     const name = document.getElementById('stfName').value;
     const phone = document.getElementById('stfPhone').value;
@@ -3788,62 +4186,97 @@ function calculateSalary() {
         </div>
     `;
 }
-
 function renderAppointments() {
     const container = document.getElementById('appointmentsList');
     const filterStatus = document.getElementById('aptStatusFilter').value;
+    const staffFilter = document.getElementById('aptStaffFilter').value; // اضافه شده برای فیلتر پرسنل
     
     container.innerHTML = '';
 
     if(db.appointments.length === 0) {
         container.innerHTML = `
-            <div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--text-muted); border:2px dashed var(--gold-dark); border-radius:15px;">
+            <div style="grid-column:1/-1; text-align:center; padding:50px; color:var(--text-muted); border:2px dashed var(--gold-dark); border-radius:15px; background:rgba(0,0,0,0.2);">
                 <i class="fa-solid fa-calendar-xmark" style="font-size:40px; margin-bottom:15px; opacity:0.5;"></i>
                 <div>هیچ نوبتی ثبت نشده است</div>
             </div>`;
         return;
     }
 
+    // مرتب‌سازی بر اساس تاریخ و ساعت
     let list = db.appointments.sort((a,b) => (a.date + a.time).localeCompare(b.date + b.time));
+    
+    // اعمال فیلترها
     if(filterStatus !== 'all') list = list.filter(a => a.status === filterStatus);
+    if(staffFilter && staffFilter !== 'all') list = list.filter(a => a.staffId == staffFilter);
+
+    if(list.length === 0) {
+         container.innerHTML = `
+            <div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-muted);">
+                نوبتی با این مشخصات یافت نشد.
+            </div>`;
+        return;
+    }
 
     list.forEach(apt => {
         let statusColor = 'var(--info)';
         let statusText = 'رزرو شده';
-        if(apt.status === 'confirmed') { statusColor = 'var(--success)'; statusText = 'تایید شده'; }
-        if(apt.status === 'canceled') { statusColor = 'var(--danger)'; statusText = 'لغو شده'; }
-        if(apt.status === 'completed') { statusColor = 'var(--text-muted)'; statusText = 'انجام شد'; }
+        let statusIcon = 'fa-clock';
+        let statusBg = 'rgba(0, 176, 255, 0.1)';
+
+        if(apt.status === 'confirmed') { 
+            statusColor = 'var(--success)'; statusText = 'تایید شده'; statusIcon = 'fa-check-circle'; statusBg = 'rgba(0, 200, 83, 0.1)';
+        }
+        if(apt.status === 'canceled') { 
+            statusColor = 'var(--danger)'; statusText = 'لغو شده'; statusIcon = 'fa-circle-xmark'; statusBg = 'rgba(255, 23, 68, 0.1)';
+        }
+        if(apt.status === 'completed') { 
+            statusColor = 'var(--gold-dark)'; statusText = 'انجام شد'; statusIcon = 'fa-clipboard-check'; statusBg = 'rgba(212, 175, 55, 0.1)';
+        }
 
         const srv = db.services.find(s => s.id == apt.serviceId) || {name: 'خدمت حذف شده'};
         const stf = db.staff.find(s => s.id == apt.staffId) || {name: 'نامشخص'};
         const cust = db.customers.find(c => c.id == apt.customerId) || {name: 'مشتری حذف شده'};
 
+        // طراحی جدید کارت برای جلوگیری از به هم ریختگی
         container.innerHTML += `
-            <div class="card" style="margin:0; border-left:4px solid ${statusColor};">
-                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
-                    <div style="font-weight:bold; font-size:16px;">${cust.name}</div>
-                    <div class="status-badge" style="background:${statusColor}20; color:${statusColor}; border:1px solid ${statusColor}40;">
-                        ${statusText}
+            <div class="card" style="margin:0; padding:0; border:1px solid rgba(212,175,55,0.2); overflow:hidden; display:flex; flex-direction:column;">
+                
+                <div style="padding:15px; background:rgba(0,0,0,0.2); border-bottom:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center;">
+                    <div style="font-weight:bold; font-size:15px; color:var(--gold-light);">
+                        <i class="fa-regular fa-user" style="margin-left:5px; opacity:0.7;"></i> ${escapeHTML(cust.name)}
+                    </div>
+                    <div style="font-size:11px; padding:4px 8px; border-radius:15px; background:${statusBg}; color:${statusColor}; border:1px solid ${statusColor}; white-space:nowrap;">
+                        <i class="fa-solid ${statusIcon}"></i> ${statusText}
                     </div>
                 </div>
-                <div style="display:flex; gap:10px; font-size:13px; color:var(--text-muted); margin-bottom:5px;">
-                    <span><i class="fa-regular fa-clock"></i> ${apt.time}</span>
-                    <span><i class="fa-regular fa-calendar"></i> ${apt.date}</span>
+
+                <div style="padding:15px; flex:1;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                        <span style="color:var(--text-muted); font-size:12px;"><i class="fa-solid fa-scissors" style="width:20px; text-align:center;"></i> خدمت:</span>
+                        <span style="font-weight:bold;">${escapeHTML(srv.name)}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                        <span style="color:var(--text-muted); font-size:12px;"><i class="fa-solid fa-user-tie" style="width:20px; text-align:center;"></i> متخصص:</span>
+                        <span>${escapeHTML(stf.name)}</span>
+                    </div>
+                    <div style="background:rgba(212,175,55,0.05); padding:8px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; font-size:13px;">
+                        <span style="color:var(--gold-primary);"><i class="fa-regular fa-calendar-days"></i> ${apt.date}</span>
+                        <span style="color:var(--text-main); font-weight:bold;"><i class="fa-regular fa-clock"></i> ${apt.time}</span>
+                    </div>
+                    ${apt.note ? `<div style="margin-top:10px; font-size:11px; color:var(--text-muted); border-top:1px dashed rgba(255,255,255,0.1); padding-top:5px;">
+                        <i class="fa-regular fa-note-sticky"></i> ${escapeHTML(apt.note)}
+                    </div>` : ''}
                 </div>
-                <div style="font-size:14px; margin-bottom:5px; color:var(--gold-light);">
-                    <i class="fa-solid fa-scissors"></i> ${srv.name}
-                </div>
-                <div style="font-size:12px; color:var(--text-dim);">
-                    <i class="fa-solid fa-user-tie"></i> متخصص: ${stf.name}
-                </div>
-                <div style="margin-top:15px; display:flex; justify-content:end; gap:5px;">
-                    <button class="btn-sm" style="color:var(--danger)" onclick="deleteItem('appointments', '${apt.id}')"><i class="fa-solid fa-trash"></i></button>
+
+                <div style="padding:10px 15px; background:rgba(0,0,0,0.3); border-top:1px solid rgba(212,175,55,0.1); text-align:left;">
+                    <button class="icon-btn" onclick="deleteItem('appointments', '${apt.id}')" style="width:32px; height:32px; background:rgba(255,23,68,0.1); color:var(--danger); border-color:var(--danger);" title="حذف نوبت">
+                        <i class="fa-solid fa-trash" style="font-size:14px;"></i>
+                    </button>
                 </div>
             </div>
         `;
     });
 }
-// === تابع جدید ثبت نوبت با تشخیص تداخل ===
 function saveAppointment() {
     const custId = document.getElementById('aptCustomer').value;
     const date = document.getElementById('aptDateInput').value;
@@ -4149,37 +4582,79 @@ printStyle.innerHTML = `
 document.head.appendChild(printStyle);
 
 // 2. کلیدهای میانبر کیبورد (Keyboard Shortcuts)
+// =========================================
+//  FIX: KEYBOARD SHORTCUTS (F1-F12 & ESC)
+// =========================================
 document.addEventListener('keydown', function(e) {
-    // بستن مودال‌ها با دکمه ESC
+    // 1. عملکرد دکمه ESC برای بستن تمام مودال‌ها
     if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-overlay.active').forEach(m => {
-            m.classList.remove('active');
-        });
+        const activeModals = document.querySelectorAll('.modal-overlay.active');
+        if (activeModals.length > 0) {
+            activeModals.forEach(m => m.classList.remove('active'));
+            showToast('پنجره بسته شد', 'info');
+        }
+        // بستن سایدبار در موبایل
+        document.getElementById('sidebar').classList.remove('open');
+        return;
     }
 
-    // اگر کاربر در حال تایپ در اینپوت است، میانبر اجرا نشود
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-
-    // F2: رفتن سریع به صندوق فروش
-    if (e.key === 'F2') {
-        e.preventDefault();
-        navigateTo('pos');
-        showToast('کلید میانبر: صندوق فروش', 'info');
+    // اگر کاربر در حال تایپ در ورودی متنی است، شورت‌کات‌ها (به جز Fها) غیرفعال شوند
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return; 
     }
 
-    // F4: باز کردن فرم ثبت نوبت
-    if (e.key === 'F4') {
-        e.preventDefault();
-        openModal('modalAppointment');
-    }
-
-    // F8: رفتن به حسابداری
-    if (e.key === 'F8') {
-        e.preventDefault();
-        navigateTo('accounting');
+    // لیست میانبرها
+    switch(e.key) {
+        case 'F1':
+            e.preventDefault();
+            navigateTo('dashboard');
+            showToast('F1: داشبورد', 'info');
+            break;
+        case 'F2':
+            e.preventDefault();
+            navigateTo('pos');
+            showToast('F2: صندوق فروش', 'info');
+            break;
+        case 'F3':
+            e.preventDefault();
+            navigateTo('appointments');
+            showToast('F3: نوبت‌دهی', 'info');
+            break;
+        case 'F4':
+            e.preventDefault();
+            // باز کردن مودال نوبت جدید (اگر در صفحه دیگری باشیم هم کار می‌کند)
+            openModal('modalAppointment');
+            showToast('F4: ثبت نوبت جدید', 'info');
+            break;
+        case 'F5':
+             // رفرش کردن صفحه (پیش‌فرض مرورگر) را جلوگیری نمی‌کنیم
+            break;
+        case 'F6':
+            e.preventDefault();
+            navigateTo('personnel');
+            showToast('F6: پرسنل', 'info');
+            break;
+        case 'F7':
+            e.preventDefault();
+            navigateTo('inventory');
+            showToast('F7: انبار', 'info');
+            break;
+        case 'F8':
+            e.preventDefault();
+            navigateTo('accounting');
+            showToast('F8: حسابداری', 'info');
+            break;
+        case 'F9':
+            e.preventDefault();
+            navigateTo('settings');
+            showToast('F9: تنظیمات', 'info');
+            break;
+        case 'F10':
+            e.preventDefault();
+            toggleTheme(); // تغییر تم
+            break;
     }
 });
-
 // 3. بستن منو در موبایل با کلیک بیرون
 document.addEventListener('click', function(e) {
     const sidebar = document.getElementById('sidebar');
@@ -4226,6 +4701,45 @@ function consumeProduct(id) {
     renderInventory();
     renderDashboard();
     showToast('ثبت شد', 'success');
+}
+// =========================================
+//  FIX: EXPORT TO EXCEL FUNCTION
+// =========================================
+function exportToExcel(tableId) {
+    var originalTable = document.getElementById(tableId);
+    if (!originalTable) {
+        showToast('جدولی برای خروجی گرفتن یافت نشد', 'error');
+        return;
+    }
+
+    // بررسی اینکه کتابخانه لود شده باشد
+    if (typeof XLSX === 'undefined') {
+        showToast('کتابخانه اکسل بارگذاری نشده است. اینترنت را چک کنید.', 'error');
+        return;
+    }
+
+    // 1. یک کپی از جدول می‌گیریم تا جدول اصلی تغییر نکند
+    var tableClone = originalTable.cloneNode(true);
+
+    // 2. حذف ستون آخر (عملیات/دکمه‌ها) از کپی جدول تا در اکسل نیاید
+    var rows = tableClone.querySelectorAll('tr');
+    rows.forEach(function(row) {
+        if (row.cells.length > 0) {
+            row.deleteCell(-1); // حذف آخرین سلول هر ردیف
+        }
+    });
+
+    // 3. تبدیل به اکسل
+    var wb = XLSX.utils.table_to_book(tableClone, {sheet: "Sheet1", rtl: true});
+    
+    // 4. نام فایل با تاریخ و ساعت
+    var now = new Date();
+    var dateStr = now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate();
+    var fileName = 'RoyalSalon_Report_' + dateStr + '.xlsx';
+    
+    // 5. دانلود
+    XLSX.writeFile(wb, fileName);
+    showToast('فایل اکسل آماده و دانلود شد', 'success');
 }
 </script>
 </body>
